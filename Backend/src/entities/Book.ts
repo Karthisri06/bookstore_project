@@ -1,10 +1,5 @@
 
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Genre } from "./Genre";
 
 @Entity()
@@ -15,19 +10,26 @@ export class Book {
   @Column()
   title: string;
 
-  @Column("simple-array")
-  authors: string[];
+  @Column()
+  authors: string;
 
-  @Column({ nullable: true })
-  imageUrl: string;
-
-  @Column({ nullable: true })
-  thumbnail: string;
-
-  @Column({ nullable: true, type: "text" })
+  @Column({type:"text",nullable:true})
   description: string;
 
-  @Column()
-  genre: string;
+  @Column({nullable:true})
+  imageUrl: string;
+
+  @ManyToOne(() => Genre, (genre) => genre.books)
+  genre: Genre;
+
+  @Column({ default: true })
+  isHotSelling: boolean;
+
+  @Column({ type: "float", nullable: true })
+  price: number;
+
+
+
 }
+
 

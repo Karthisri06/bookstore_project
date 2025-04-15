@@ -1,3 +1,4 @@
+// entities/Genre.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Book } from "./Book";
 
@@ -6,7 +7,7 @@ export class Genre {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @OneToMany(() => Book, (book) => book.genre)

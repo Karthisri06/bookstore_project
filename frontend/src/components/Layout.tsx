@@ -1,20 +1,21 @@
 import Header from "./Header";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { Outlet } from "react-router-dom"; // Make sure to import Outlet
 
-type Props = {
-  children: React.ReactNode;
-};
-
-const Layout = ({ children }: Props) => {
+const Layout = () => {
   return (
     <div>
       <Header />
       <Navbar />
-      <main style={{ minHeight: "70vh", padding: "1rem" }}>{children}</main>
+      {/* Main content is rendered where the nested route will be injected */}
+      <main style={{ minHeight: "70vh", padding: "1rem" }}>
+        <Outlet /> {/* Child components will be rendered here */}
+      </main>
       <Footer />
     </div>
   );
 };
 
 export default Layout;
+

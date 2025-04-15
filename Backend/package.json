@@ -7,7 +7,8 @@
     "start": "nodemon src/index.ts",
     "createMigrate": "npx typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
     "runmigration": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
-    "revert": "npx typeorm-ts-node-commonjs migration:revert -d src/data-source.ts"
+    "revert": "npx typeorm-ts-node-commonjs migration:revert -d src/data-source.ts",
+      "seed": "ts-node src/scripts/runSeeder.ts"
   },
   "keywords": [],
   "author": "",

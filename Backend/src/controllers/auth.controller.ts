@@ -10,6 +10,9 @@ import { AuthRequest } from "../authrequest";
   
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
+
+  console.log("HIT!");
+  res.status(200).json({ message: "Register endpoint works!" });
     const userRepo = AppDataSource.getRepository(User);
     const { email, password } = req.body;
   
@@ -31,13 +34,13 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   
       console.log("New user before validation:", newUser);
   
-      const errors = await validate(newUser);
-      console.log("Validation errors:", errors);
+      // const errors = await validate(newUser);
+      // console.log("Validation errors:", errors);
   
-      if (errors.length > 0) {
-        res.status(400).json({ message: "Validation failed", errors });
-        return;
-      }
+      // if (errors.length > 0) {
+      //   res.status(400).json({ message: "Validation failed", errors });
+      //   return;
+      // }
   
       await userRepo.save(newUser);
       console.log("User saved successfully!");

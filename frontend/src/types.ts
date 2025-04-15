@@ -1,4 +1,5 @@
-// src/types.ts
+
+import { Key } from "react";
 
 export interface Author {
     id: number;
@@ -6,15 +7,18 @@ export interface Author {
   }
   
   export interface Book {
+    authors: string;
     id: number;
     title: string;
     author: Author;
     imageUrl: string;
-    genre: string;
+    genre: Genre;
+    price: number;
     isHotSelling?: boolean;
   }
   
   export interface Genre {
+    id: Key | null | undefined;
     name: string;
   }
   

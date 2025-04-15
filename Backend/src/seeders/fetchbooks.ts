@@ -1,10 +1,14 @@
 import { AppDataSource } from "../data-source";
-import { Book } from "../entities/Book"; // Make sure the correct path is here
+import { Book } from "../entities/Book";
+import { Genre } from "../entities/Genre";
 import axios from "axios";
 
-const fetchBooks = async () => {
+export const fetchBooks = async () => {
   try {
     const bookRepo = AppDataSource.getRepository(Book);
+    const genreRepo = AppDataSource.getRepository(Genre);
+
+    
     const genres = [
       "fiction",
       "romance",
@@ -23,24 +27,41 @@ const fetchBooks = async () => {
       "travel",
     ];
 
-    for (const genre of genres) {
+    
+    for (const genreName of genres) {
+    
+      let genre = await genreRepo.findOneBy({ name: genreName });
+      if (!genre) {
+        genre = genreRepo.create({ name: genreName });
+        await genreRepo.save(genre);
+      }
+
+    
       const response = await axios.get(
-        `https://www.googleapis.com/books/v1/volumes?q=subject:${genre}&maxResults=20&key=YOUR_GOOGLE_API_KEY`
+        `https://www.googleapis.com/books/v1/volumes?q=subject:${genreName}&maxResults=20&key=AIzaSyB0u68RLRHkWd70jiX1i_slsxOIrI1uFYY`
       );
-      
       const books = response.data.items;
-      
-      // Loop through books and save them to the DB
+
       for (const item of books) {
+       
+        const imageUrl = item.volumeInfo.imageLinks
+          ? item.volumeInfo.imageLinks.large ||
+            item.volumeInfo.imageLinks.medium ||
+            item.volumeInfo.imageLinks.thumbnail
+          : "/default-book-cover.jpg";  
+
         const book = bookRepo.create({
           title: item.volumeInfo.title,
-          authors: item.volumeInfo.authors || ["Unknown"],
-          imageUrl: item.volumeInfo.imageLinks?.thumbnail,
+          authors: (item.volumeInfo.authors || ["Unknown"]).join(", "),
           description: item.volumeInfo.description || "No description available",
-          genre: genre,
+          imageUrl,  
+          genre, 
+          price: parseFloat((Math.random() * 500 + 100).toFixed(2)),    
+          isHotSelling: false,  
         });
 
-        await bookRepo.save(book);  // Save each book to the database
+        
+        await bookRepo.save(book);
         console.log(`Saved book: ${book.title}`);
       }
     }
@@ -49,5 +70,7 @@ const fetchBooks = async () => {
   }
 };
 
-fetchBooks();
+
+
+
 
