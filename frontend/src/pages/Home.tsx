@@ -1,24 +1,50 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { Book, Genre } from "../types";
-import AuthModal from "../pages/Authmodal"; 
+import { useNavigate } from "react-router-dom";  
+import { Book } from "../types";
+import AuthModal from "../pages/Authmodal";
+import { loginUser, signupUser } from "../services/authService";
 
 const Home = () => {
   const [hotBooks, setHotBooks] = useState<Book[]>([]);
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [showModal, setShowModal] = useState(false); 
-  const isLoggedIn = false;
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const navigate = useNavigate(); 
 
-  const handleLogin = (email: string, password: string) => {
-    console.log("Logging in with", email, password);
-    setShowModal(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const response = await loginUser(email, password);
+      localStorage.setItem("token", response.data.token);
+      setIsLoggedIn(true);
+      setShowModal(false);
+      console.log("Login successful");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please try again.");
+    }
   };
 
-  const handleSignup = (email: string, password: string) => {
-    console.log("Signing up with", email, password);
-    setShowModal(false);
+  const handleSignup = async (email: string, password: string) => {
+    try {
+      const response = await signupUser(email, password);
+      localStorage.setItem("token", response.data.token);
+      setIsLoggedIn(true);
+      setShowModal(false);
+      console.log("Signup successful");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert("Signup failed. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -26,16 +52,21 @@ const Home = () => {
       try {
         const res = await axios.get<Book[]>("http://localhost:5000/books");
         const allBooks = res.data;
+        setAllBooks(allBooks);
 
+        
         const shuffled = [...allBooks].sort(() => 0.5 - Math.random());
         setHotBooks(shuffled.slice(0, 5));
+
+      
         setFeaturedBooks(allBooks.slice(0, 15));
 
+       
         const seen = new Set<string>();
-        const uniqueGenres: Genre[] = [];
+        const uniqueGenres: string[] = [];
         allBooks.forEach((book) => {
-          if (book.genre && book.genre.name && !seen.has(book.genre.name)) {
-            seen.add(book.genre.name);
+          if (book.genre && !seen.has(book.genre)) {
+            seen.add(book.genre);
             uniqueGenres.push(book.genre);
           }
         });
@@ -47,6 +78,12 @@ const Home = () => {
 
     fetchBooks();
   }, []);
+
+  const filterByGenre = (genre: string) => {
+    const filteredBooks = allBooks.filter((book) => book.genre === genre);
+    setFeaturedBooks(filteredBooks);
+    navigate(`/genre/${genre}`);
+  };
 
   const scrollLeft = () => {
     const container = document.getElementById("featured-scroll");
@@ -67,8 +104,18 @@ const Home = () => {
         handleSignup={handleSignup}
       />
 
+      {/* Login/Signup Button */}
+      {!isLoggedIn && (
+        <div className="text-end mb-3">
+          <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
+            Login / Signup
+          </button>
+        </div>
+      )}
+
+      {/* Hot Selling Section */}
       <section className="mb-5">
-        <h2 className="mb-4 text-center"> Hot Selling Books</h2>
+        <h2 className="mb-4 text-center">Hot Selling Books</h2>
         <div id="hotCarousel" className="carousel slide" data-bs-ride="carousel">
           <div className="carousel-inner">
             {hotBooks.map((book, index) => (
@@ -102,6 +149,7 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Featured Section */}
       <section className="mb-5">
         <h2 className="text-center mb-4">Featured Books</h2>
         <div className="position-relative mb-5">
@@ -130,14 +178,14 @@ const Home = () => {
                   <h5 className="card-title">{book.title}</h5>
                   <p className="card-text">{book.authors || "Unknown Author"}</p>
                   <p className="card-text text-success fw-bold">₹{book.price || "N/A"}</p>
-                  <div className="d-flex justify-content-between mt-3">
+                  <div className="d-flex justify-content-between flex-wrap gap-2 mt-3">
                     <button
                       className="btn btn-sm btn-outline-primary"
                       onClick={() => {
                         if (!isLoggedIn) {
                           setShowModal(true);
                         } else {
-                          // addToCart(book.id)
+                          console.log("Added to cart");
                         }
                       }}
                     >
@@ -149,11 +197,17 @@ const Home = () => {
                         if (!isLoggedIn) {
                           setShowModal(true);
                         } else {
-                      
+                          console.log("Proceed to Buy");
                         }
                       }}
                     >
                       Buy Now
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => navigate(`/book/${book.id}`)}
+                    >
+                      More Details
                     </button>
                   </div>
                 </div>
@@ -170,17 +224,19 @@ const Home = () => {
           </button>
         </div>
       </section>
+
+      {/* Genre Buttons */}
       <section>
         <h2 className="text-center mb-4">Browse by Genre</h2>
         <div className="d-flex flex-wrap justify-content-center">
           {genres.map((genre) => (
-            <Link
-              key={genre.id}
-              to={`/genre/${genre.name}`}
+            <button
+              key={genre}
               className="btn btn-outline-dark m-2 px-4 py-2 rounded-pill"
+              onClick={() => filterByGenre(genre)}
             >
-              {genre.name}
-            </Link>
+              {genre}
+            </button>
           ))}
         </div>
       </section>
@@ -189,3 +245,10 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+
+
+

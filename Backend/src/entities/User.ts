@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { IsEmail, IsNotEmpty, Length } from "class-validator";
 import { OneToMany } from "typeorm";
 import { Book } from "./Book";
+import { Review } from "./Review";
 
 
 export type UserRole = "admin" | "author" | "user";
@@ -25,4 +26,7 @@ export class User {
 
   @OneToMany(() => Book, (book) => book.authors)
   books: Book[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 }

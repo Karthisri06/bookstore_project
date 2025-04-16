@@ -4,6 +4,7 @@ import { Key } from "react";
 export interface Author {
     id: number;
     name: string;
+    password:string;
   }
   
   export interface Book {
@@ -12,7 +13,7 @@ export interface Author {
     title: string;
     author: Author;
     imageUrl: string;
-    genre: Genre;
+    genre: string;
     price: number;
     isHotSelling?: boolean;
   }
@@ -22,3 +23,8 @@ export interface Author {
     name: string;
   }
   
+  export interface AuthModal {
+  show: boolean;
+  handleClose: () => void;
+  handleLoginSuccess: () => void; // Added this for login success
+}

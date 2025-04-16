@@ -1,29 +1,49 @@
 import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+// import { login } from "../services/authService";
 
-interface AuthModalProps {
+type AuthModalProps ={
   show: boolean;
   handleClose: () => void;
-  handleLogin: (email: string, password: string) => void;
-  handleSignup: (email: string, password: string) => void;
+  handleLogin: (email: string, password: string) => Promise<void>;
+  handleSignup: (email: string, password: string) => Promise<void>;
+
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({
   show,
   handleClose,
-  handleLogin,
-  handleSignup,
+  handleLogin, 
+  handleSignup// Handle success after login
 }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // To display error messages
+  const [loading, setLoading] = useState(false); // To track loading state
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      handleLogin(email, password);
-    } else {
-      handleSignup(email, password);
+    setErrorMessage(""); // Reset any previous error message
+    setLoading(true); // Start loading spinner
+
+    try {
+      if (isLogin) {
+        await handleLogin(email, password);  // ✅ Call login
+        handleClose(); // Optional: Close modal on success
+      } else {
+        await handleSignup(email, password); // ✅ Call signup
+        setIsLogin(true); // Switch to login view after signup
+      }
+    } catch (error) {
+      let message = "Something went wrong.";
+      if (error instanceof Error) {
+        message = error.message;
+      }
+  console.log(errorMessage);
+     // Set the error message from the service
+    } finally {
+      setLoading(false); // Stop loading spinner
     }
   };
 
@@ -33,6 +53,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
         <Modal.Title>{isLogin ? "Login" : "Sign Up"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>} {/* Display error */}
+        
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
@@ -54,8 +76,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
-            {isLogin ? "Login" : "Sign Up"}
+          <Button variant="primary" type="submit" disabled={loading}>
+            {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
           </Button>
         </Form>
       </Modal.Body>
@@ -72,6 +94,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
 };
 
 export default AuthModal;
+
+
 
 
 

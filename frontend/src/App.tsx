@@ -1,22 +1,16 @@
-
-import { BrowserRouter as Router} from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
-import Navbar from './components/Navbar';
+// src/App.tsx
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AppRoutes from './routes/AppRoutes';
+import { AuthProvider } from './services/AuthContext';
 
-
-
-const App=()=>{
-  return(
-    <Router>
-      <Navbar />
-      <main style={{ paddingTop: "5rem" }}>
-      <AppRoutes/>
-      </main>
-      
-    </Router>
-  )
-}
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
+  );
+};
 
 export default App;
+
 
