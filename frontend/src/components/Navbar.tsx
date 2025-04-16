@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
-import { useState } from "react";
+import { useAuth } from "../services/AuthContext";  // Import the AuthContext hook
+
+interface NavbarProps {
+  isAuthenticated: boolean;
+  handleLoginClick: () => void;
+  onLogout: () => void;
+}
 
 const Navbar: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // state to track authentication status
-
-  // Function to toggle login/logout state
-  const handleAuthToggle = () => {
-    setIsAuthenticated(!isAuthenticated);
-  };
+  const { isAuthenticated, openAuthModal, logout } = useAuth();  // Get auth context
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
@@ -40,20 +41,15 @@ const Navbar: React.FC = () => {
             <FaShoppingCart size={20} />
           </Link>
 
-          {/* Conditional rendering based on authentication status */}
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="btn btn-outline-secondary me-2">
                 <FaUserCircle size={20} />
               </Link>
-              <button className="btn btn-outline-danger" onClick={handleAuthToggle}>
-                Logout
-              </button>
+              <button className="btn btn-outline-danger" onClick={logout}>Logout</button>
             </>
           ) : (
-            <button className="btn btn-outline-primary" onClick={handleAuthToggle}>
-              Login / Sign Up
-            </button>
+            <button className="btn btn-outline-primary" onClick={openAuthModal}>Login / Sign Up</button>
           )}
         </div>
       </div>
@@ -62,7 +58,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
-
-
 

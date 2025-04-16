@@ -1,3 +1,86 @@
+// import React, { useState } from "react";
+// import { toast } from 'react-toastify';
+
+// interface AuthModalProps {
+//   show: boolean;
+//   handleClose: () => void;
+//   handleLogin: (email: string, password: string) => Promise<void>;
+//   handleSignup: (email: string, password: string) => Promise<void>;
+//   onMaybeLater: () => void;
+// }
+
+// const AuthModal: React.FC<AuthModalProps> = ({ show, handleClose, handleLogin, handleSignup, onMaybeLater }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+
+//   return (
+//     <div className={`modal ${show ? "d-block" : "d-none"}`} tabIndex={-1}>
+//       <div className="modal-dialog">
+//         <div className="modal-content">
+//           <div className="modal-header">
+//             <h5 className="modal-title">Login / Sign Up</h5>
+//             <button type="button" className="btn-close" onClick={handleClose}></button>
+//           </div>
+//           <div className="modal-body">
+//             {/* Login Form */}
+//             <form
+//               onSubmit={async (e) => {
+//                 e.preventDefault();
+//                 try {
+//                   await handleLogin(email, password); 
+//                   toast.success("Login successful!");  // Success Toast
+//                 } catch (err: any) {
+//                   toast.error(err?.response?.data?.message || "Login failed");  // Error Toast
+//                 }
+//               }}
+//             >
+//               <div className="mb-3">
+//                 <label htmlFor="email" className="form-label">Email</label>
+//                 <input
+//                   type="email"
+//                   className="form-control"
+//                   id="email"
+//                   value={email}
+//                   onChange={(e) => setEmail(e.target.value)}
+//                 />
+//               </div>
+//               <div className="mb-3">
+//                 <label htmlFor="password" className="form-label">Password</label>
+//                 <input
+//                   type="password"
+//                   className="form-control"
+//                   id="password"
+//                   value={password}
+//                   onChange={(e) => setPassword(e.target.value)}
+//                 />
+//               </div>
+//               <button type="submit" className="btn btn-primary">Login</button>
+//             </form>
+//             <hr />
+//             {/* Sign Up Button */}
+//             <button
+//               onClick={async () => {
+//                 try {
+//                   await handleSignup(email, password);
+//                   toast.success("Registration successful!");  // Success Toast
+//                 } catch (err: any) {
+//                   toast.error(err?.response?.data?.message || "Registration failed");  // Error Toast
+//                 }
+//               }}
+//               className="btn btn-success w-100"
+//             >
+//               Sign Up
+//             </button>
+//             <button className="btn btn-secondary w-100 mt-2" onClick={onMaybeLater}>Maybe Later</button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AuthModal;
+
 import React, { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 // import { login } from "../services/authService";
@@ -7,6 +90,7 @@ type AuthModalProps ={
   handleClose: () => void;
   handleLogin: (email: string, password: string) => Promise<void>;
   handleSignup: (email: string, password: string) => Promise<void>;
+  onMaybeLater: () => void;
 
 }
 
@@ -94,6 +178,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 };
 
 export default AuthModal;
+
 
 
 

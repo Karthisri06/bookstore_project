@@ -7,6 +7,9 @@ import AuthDash from "../pages/AuthorDash";
 import AdminDash from "../pages/AdminDash";
 import Reviews from "../pages/Reviews";
 import Genre from "../pages/Genre";
+import BookDetails from "../pages/BookDetails";
+import Cart from "../pages/Cart";
+
 
 const AppRoutes = () => {
   return (
@@ -17,7 +20,10 @@ const AppRoutes = () => {
         <Route path="/author" element={<AuthDash />} />
         <Route path="/admin" element={<AdminDash />} />
         <Route path="/reviews" element={<Reviews bookId={""} />} />
-        <Route path="/genre/:genre" element={<Genre />} /> {/* Adjusted path */}
+        <Route path="/genre/:genre" element={<Genre />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/book/:id" element={<BookDetails />} />
+        
       </Route>
     </Routes>
   );

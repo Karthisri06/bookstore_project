@@ -1,17 +1,12 @@
-// Cart.tsx
-import { useState } from 'react';
+import { useCart } from '../services/CartContext';
 import { Button, Table } from 'react-bootstrap';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<any[]>([]);
-
-  const handleRemoveFromCart = (bookId: string) => {
-    setCartItems(cartItems.filter(item => item.id !== bookId));
-  };
+  const { cartItems, removeFromCart, clearCart } = useCart();
 
   const handleCheckout = () => {
-    // Handle checkout logic
     alert("Proceeding to checkout...");
+    clearCart();
   };
 
   return (
@@ -34,7 +29,7 @@ const Cart = () => {
                 <td>{item.title}</td>
                 <td>${item.price}</td>
                 <td>
-                  <Button variant="danger" onClick={() => handleRemoveFromCart(item.id)}>
+                  <Button variant="danger" onClick={() => removeFromCart(item.id)}>
                     Remove
                   </Button>
                 </td>
@@ -49,3 +44,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

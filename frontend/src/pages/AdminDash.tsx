@@ -1,7 +1,9 @@
-// AdminDashboard.tsx
+// AdminDash.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, Button, Form, Alert, Container } from 'react-bootstrap';
+import { useAuth } from "../services/AuthContext";  // Importing AuthContext to get current user role
+import { useNavigate } from 'react-router-dom';
 
 interface Book {
   id: string;
@@ -11,20 +13,28 @@ interface Book {
 }
 
 const AdminDash = () => {
+  const { isAuthenticated, user } = useAuth();  // Get authentication state
   const [books, setBooks] = useState<Book[]>([]);
   const [authorEmails, setAuthorEmails] = useState<{ [key: string]: string }>({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();  // For navigation
 
   useEffect(() => {
-    axios.get('/books')
-      .then((response) => {
-        setBooks(response.data);
-      })
-      .catch(() => {
-        setErrorMessage("Error fetching books.");
-      });
-  }, []);
+    // Redirect if not authenticated or not admin
+    if (!isAuthenticated || user?.role !== "admin") {
+      navigate("/");  // Redirect to home if not an admin
+    } else {
+      // Fetch books for admins if they are logged in
+      axios.get('/books')
+        .then((response) => {
+          setBooks(response.data);
+        })
+        .catch(() => {
+          setErrorMessage("Error fetching books.");
+        });
+    }
+  }, [isAuthenticated, user, navigate]);  // Dependency array includes user and isAuthenticated
 
   const handleAssignAuthor = (bookId: string) => {
     const email = authorEmails[bookId];
@@ -111,4 +121,7 @@ const AdminDash = () => {
 };
 
 export default AdminDash;
+
+
+
 

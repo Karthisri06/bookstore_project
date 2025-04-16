@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Form, ListGroup, Alert } from 'react-bootstrap';
+import { toast } from "react-toastify";
 
 const Reviews = ({ bookId }: { bookId: string }) => {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -9,8 +10,8 @@ const Reviews = ({ bookId }: { bookId: string }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // Fetch reviews for the book
-    axios.get(`/api/reviews/${bookId}`)
+    
+    axios.get(`/reviews/${bookId}`)
       .then((response) => {
         setReviews(response.data);
       })
@@ -19,18 +20,22 @@ const Reviews = ({ bookId }: { bookId: string }) => {
       });
   }, [bookId]);
 
-  const handleAddReview = () => {
-    // Add review logic
-    axios.post(`/api/reviews/${bookId}`, { text: reviewText })
-      .then((response) => {
-        setReviews([...reviews, response.data]);
-        setReviewText(""); // Reset review input
-      })
-      .catch(() => {
-        setErrorMessage("Error adding review.");
-      });
-  };
-
+  
+const handleAddReview = async () => {
+  try {
+    await axios.post("http://localhost:5000/reviews", {
+      content: reviewText,
+      rating: 5,
+      userId: 1,
+      bookId: parseInt(bookId),
+    });
+    toast.success("Review submitted successfully!");
+    setReviewText("");
+  } catch (error: any) {
+    console.error("Error adding review: ", error);
+    toast.error("Failed to submit review ");
+  }
+};
   return (
     <div>
       <h1>Reviews</h1>
@@ -50,7 +55,7 @@ const Reviews = ({ bookId }: { bookId: string }) => {
         {reviews.map((review) => (
           <ListGroup.Item key={review.id}>
             {review.text}
-            {/* Edit/Delete buttons can go here */}
+            
           </ListGroup.Item>
         ))}
       </ListGroup>
