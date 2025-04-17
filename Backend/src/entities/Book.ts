@@ -6,6 +6,10 @@ import { Review } from "./Review";
 
 @Entity()
 export class Book {
+  rating: any;
+  static findOne(arg0: { where: { id: number; }; }) {
+    throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn()
   id: number;
 

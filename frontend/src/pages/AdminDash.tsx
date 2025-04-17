@@ -1,126 +1,106 @@
 // AdminDash.tsx
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Table, Button, Form, Alert, Container } from 'react-bootstrap';
-import { useAuth } from "../services/AuthContext";  // Importing AuthContext to get current user role
+import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
-interface Book {
-  id: string;
-  title: string;
-  genre: { name: string };
-  author?: string;
-}
+import axios from 'axios';
+import { useAuth } from '../services/AuthContext';
 
 const AdminDash = () => {
-  const { isAuthenticated, user } = useAuth();  // Get authentication state
-  const [books, setBooks] = useState<Book[]>([]);
-  const [authorEmails, setAuthorEmails] = useState<{ [key: string]: string }>({});
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();  // For navigation
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  const [books, setBooks] = useState([]);
+  const [unassignedBooks, setUnassignedBooks] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Redirect if not authenticated or not admin
     if (!isAuthenticated || user?.role !== "admin") {
-      navigate("/");  // Redirect to home if not an admin
-    } else {
-      // Fetch books for admins if they are logged in
-      axios.get('/books')
-        .then((response) => {
-          setBooks(response.data);
-        })
-        .catch(() => {
-          setErrorMessage("Error fetching books.");
-        });
-    }
-  }, [isAuthenticated, user, navigate]);  // Dependency array includes user and isAuthenticated
-
-  const handleAssignAuthor = (bookId: string) => {
-    const email = authorEmails[bookId];
-    if (!email) {
-      setErrorMessage("Please enter an author email.");
-      return;
+      return; // Just do nothing — no redirect
     }
 
-    axios.post(`/books/${bookId}/assign-author`, { email })
-      .then(() => {
-        setSuccessMessage("Author assigned successfully.");
-        setErrorMessage("");
-        setBooks(prevBooks =>
-          prevBooks.map(book =>
-            book.id === bookId ? { ...book, author: email } : book
-          )
-        );
+    axios.get("http://localhost:5000/books")
+      .then(res => {
+        const allBooks = res.data;
+        setBooks(allBooks);
+        const unassigned = allBooks.filter((book: any) => !book.author);
+        setUnassignedBooks(unassigned);
       })
       .catch(() => {
-        setErrorMessage("Failed to assign author.");
-        setSuccessMessage("");
+        setError("Failed to load books.");
       });
-  };
+  }, [isAuthenticated, user]);
 
-  const handleInputChange = (bookId: string, value: string) => {
-    setAuthorEmails(prev => ({ ...prev, [bookId]: value }));
+  const handleCardClick = (path: string) => {
+    navigate(path);
   };
 
   return (
     <Container className="py-4">
       <h1 className="mb-4">Admin Dashboard</h1>
 
-      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-      {successMessage && <Alert variant="success">{successMessage}</Alert>}
+      {error && <Alert variant="danger">{error}</Alert>}
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>Author</th>
-            <th>Assign Author</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((book) => (
-            <tr key={book.id}>
-              <td>{book.title}</td>
-              <td>{book.genre.name}</td>
-              <td>{book.author || "Unassigned"}</td>
-              <td>
-                {!book.author && (
-                  <>
-                    <Form.Control
-                      type="email"
-                      placeholder="Author email"
-                      className="mb-2"
-                      value={authorEmails[book.id] || ""}
-                      onChange={(e) => handleInputChange(book.id, e.target.value)}
-                    />
-                    <Button
-                      variant="success"
-                      size="sm"
-                      onClick={() => handleAssignAuthor(book.id)}
-                    >
-                      Assign
-                    </Button>
-                  </>
-                )}
-              </td>
-              <td>
-                <div className="d-flex gap-2">
-                  <Button variant="warning" size="sm">Edit</Button>
-                  <Button variant="danger" size="sm">Delete</Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <Row xs={1} md={2} lg={3} className="g-4">
+        <Col>
+          <Card
+            className="h-100 text-center hover-shadow"
+            onClick={() => handleCardClick('/admin/overview')}
+            style={{ cursor: 'pointer' }}
+          >
+            <Card.Body>
+              <Card.Title>📚 Total Books</Card.Title>
+              <Card.Text>{books.length} books available</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col>
+          <Card
+            className="h-100 text-center hover-shadow"
+            onClick={() => handleCardClick('/admin/unassigned')}
+            style={{ cursor: 'pointer' }}
+          >
+            <Card.Body>
+              <Card.Title>❌ Unassigned Books</Card.Title>
+              <Card.Text>{unassignedBooks.length} books without authors</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col>
+          <Card
+            className="h-100 text-center hover-shadow"
+            onClick={() => handleCardClick('/admin/notifications')}
+            style={{ cursor: 'pointer' }}
+          >
+            <Card.Body>
+              <Card.Title>🔔 Notifications</Card.Title>
+              <Card.Text>3 pending approvals</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col>
+          <Card
+            className="h-100 text-center bg-success text-white hover-shadow"
+            onClick={() => handleCardClick('/admin/add')}
+            style={{ cursor: 'pointer' }}
+          >
+            <Card.Body>
+              <Card.Title>➕ Add Book / Author</Card.Title>
+              <Card.Text>Manage new books and authors</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 };
 
 export default AdminDash;
+
+
+
 
 
 

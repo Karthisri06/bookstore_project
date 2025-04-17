@@ -1,19 +1,19 @@
-// src/middleware/authMiddleware.ts
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
   user?: {
-    id:number;
-    role:string;
-  }
+    id: number;
+    role: string;
+  };
 }
 
+// Authentication middleware to check if the user has a valid token
 export const authenticate = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-):void => {
+): void => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -21,18 +21,30 @@ export const authenticate = (
     return;
   }
 
- 
-
   try {
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!)as{
-        id:number;
-        role:string;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: number;
+      role: string;
     };
     req.user = decoded;
     next();
   } catch (err) {
-     res.status(403).json({ message: "Invalid token" });
-     return
+    res.status(403).json({ message: "Invalid token" });
+    return;
   }
 };
+
+// Admin middleware to check if the user has an 'admin' role
+export const isAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (req.user?.role !== 'admin') {
+    res.status(403).json({ message: "Forbidden: Admin access only" });
+    return
+  }
+  next();
+};
+

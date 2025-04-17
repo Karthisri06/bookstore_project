@@ -3,7 +3,7 @@ import { AppDataSource } from "./data-source";
 import authRoutes from "./routes/auth.routes";
 import bookRoutes from "./routes/book.routes";
 import { User } from "../src/entities/User";
-import reviewRoutes from './routes/review.routes';
+import ReviewController from './routes/review.routes';
 import cors from "cors";
 import dotenv from 'dotenv'
 
@@ -17,7 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/books", bookRoutes);
-app.use('/reviews', reviewRoutes);
+app.use("/reviews", ReviewController);
+app.use("/author",authRoutes)
+
 
 app.get("/test", (req, res) => {
 console.log("HI")

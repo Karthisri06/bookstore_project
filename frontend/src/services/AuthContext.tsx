@@ -1,5 +1,11 @@
-// services/AuthContext.tsx
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
 
 interface User {
   email: string;
@@ -10,7 +16,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   showModal: boolean;
-  login: (user: User) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
   setIsLoggedIn: (value: boolean) => void;
   openAuthModal: () => void;
@@ -24,34 +30,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const login = (userData: User) => {
+  // On app load, check if user and token exist in localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
+    if (token && userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  // Login function stores token and user
+  const login = (userData: User, token: string) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);
+    window.location.reload();
+    closeAuthModal();
   };
 
+  // Logout clears everything
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
-    localStorage.removeItem("token");
   };
 
-  const openAuthModal = () => setShowModal(true);
+const openAuthModal = () => setShowModal(true);
   const closeAuthModal = () => setShowModal(false);
 
-  const value: AuthContextType = {
-    isAuthenticated,
-    user,
-    showModal,
-    login,
-    logout,
-    setIsLoggedIn: setIsAuthenticated,
-    openAuthModal,
-    closeAuthModal,
-  };
+  // Memoize the value to prevent unnecessary re-renders
+  const value: AuthContextType = useMemo(
+    () => ({
+      isAuthenticated,
+      user,
+      showModal,
+      login,
+      logout,
+      setIsLoggedIn: setIsAuthenticated,
+      openAuthModal,
+      closeAuthModal,
+    }),
+    [isAuthenticated, user, showModal]
+  );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 };
 
+// Custom hook for using the AuthContext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -59,6 +90,8 @@ export const useAuth = () => {
   }
   return context;
 };
+
+
 
 
 

@@ -55,11 +55,12 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     const { email, password } = req.body;
   
     try {
+      console.log('test')
       const userRepo = AppDataSource.getRepository(User);
-      const user = await userRepo.findOneBy({ email });
+      const user = await userRepo.findOne({ where:{email} });
   
       if (!user) {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "Invalid email or password" });
         return 
       }
   
@@ -68,6 +69,10 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
          res.status(401).json({ message: "Invalid password" });
          return 
       }
+      // if (user.role !== 'admin' ) {
+      //   res.status(403).json({ message: "You do not have admin privileges" });
+      //   return;
+      // }
   
       // Create JWT token
       const token = jwt.sign(

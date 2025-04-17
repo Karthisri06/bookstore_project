@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Button, Card, Form, Col, Row, Alert } from 'react-bootstrap';
 
 interface Book {
   id: number;
@@ -11,6 +12,8 @@ interface Book {
 const AuthorDashboard: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [newBook, setNewBook] = useState({ title: '', description: '', genre: '' });
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const fetchBooks = async () => {
     try {
@@ -20,6 +23,7 @@ const AuthorDashboard: React.FC = () => {
       });
       setBooks(res.data);
     } catch (err) {
+      setError('Error fetching books');
       console.error('Error fetching books:', err);
     }
   };
@@ -32,7 +36,9 @@ const AuthorDashboard: React.FC = () => {
       });
       setNewBook({ title: '', description: '', genre: '' });
       fetchBooks();
+      setSuccess('Book published successfully!');
     } catch (err) {
+      setError('Error adding book');
       console.error('Error adding book:', err);
     }
   };
@@ -42,67 +48,87 @@ const AuthorDashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar (optional) */}
-      <div className="w-64 bg-gray-800 text-white p-4">
-        <h2 className="text-2xl font-bold mb-6">Author Panel</h2>
-        <ul>
-          <li className="mb-2"><a href="#" className="hover:underline">Dashboard</a></li>
-          <li className="mb-2"><a href="#" className="hover:underline">My Books</a></li>
-          {/* Add more nav items if needed */}
-        </ul>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-4">Welcome, Author!</h1>
-
-        {/* List of Books */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">My Books</h2>
-          {books.length === 0 ? (
-            <p>No books published yet.</p>
-          ) : (
-            <ul>
-              {books.map((book) => (
-                <li key={book.id} className="mb-2 border p-2 rounded">
-                  <strong>{book.title}</strong> ({book.genre})<br />
-                  <span>{book.description}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+    <div className="container-fluid">
+      <div className="row">
+        {/* Sidebar */}
+        <div className="col-md-3 bg-dark text-white p-4">
+          <h2 className="h4">Author Dashboard</h2>
+          <ul className="list-unstyled">
+            <li><a href="#" className="text-white">Dashboard</a></li>
+            <li><a href="#" className="text-white">My Books</a></li>
+          </ul>
         </div>
 
-        {/* Publish Book */}
-        <div className="border-t pt-4">
-          <h2 className="text-xl font-semibold mb-2">Publish a New Book</h2>
-          <input
-            className="block my-1 p-2 border w-full"
-            type="text"
-            placeholder="Title"
-            value={newBook.title}
-            onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
-          />
-          <input
-            className="block my-1 p-2 border w-full"
-            type="text"
-            placeholder="Genre"
-            value={newBook.genre}
-            onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })}
-          />
-          <textarea
-            className="block my-1 p-2 border w-full"
-            placeholder="Description"
-            value={newBook.description}
-            onChange={(e) => setNewBook({ ...newBook, description: e.target.value })}
-          />
-          <button
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-            onClick={handleAddBook}
-          >
-            Publish Book
-          </button>
+        {/* Main Content */}
+        <div className="col-md-9 p-4">
+          <h1 className="mb-4">Welcome, Author!</h1>
+
+          {/* Error or Success Messages */}
+          {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
+
+          {/* List of Books */}
+          <div className="mb-4">
+            <h2 className="h5">My Books</h2>
+            {books.length === 0 ? (
+              <p>No books published yet.</p>
+            ) : (
+              <Row>
+                {books.map((book) => (
+                  <Col key={book.id} md={4} className="mb-3">
+                    <Card>
+                      <Card.Body>
+                        <Card.Title>{book.title}</Card.Title>
+                        <Card.Text>{book.description}</Card.Text>
+                        <Card.Text><strong>Genre:</strong> {book.genre}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </div>
+
+          {/* Publish Book */}
+          <div className="border-top pt-4">
+            <h2 className="h5 mb-3">Publish a New Book</h2>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter book title"
+                  value={newBook.title}
+                  onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Genre</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter book genre"
+                  value={newBook.genre}
+                  onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter book description"
+                  value={newBook.description}
+                  onChange={(e) => setNewBook({ ...newBook, description: e.target.value })}
+                />
+              </Form.Group>
+
+              <Button variant="primary" onClick={handleAddBook}>
+                Publish Book
+              </Button>
+            </Form>
+          </div>
         </div>
       </div>
     </div>
@@ -110,5 +136,6 @@ const AuthorDashboard: React.FC = () => {
 };
 
 export default AuthorDashboard;
+
 
 
