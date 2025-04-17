@@ -1,6 +1,6 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { Genre } from "./Genre";
+
 import { User } from "./User";
 import { Review } from "./Review";
 
@@ -33,7 +33,7 @@ export class Book {
   isHotSelling: boolean;
 
   @ManyToOne(() => User, (user) => user.books, { nullable: true })
-  author: User; // This must be of type User
+  author: User; 
 
   @Column({ type: "float", nullable: true })
   price: number;

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Book } from "../types";
 import { loginUser, signupUser } from "../services/authService";
 import AuthModal from "./Authmodal";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 

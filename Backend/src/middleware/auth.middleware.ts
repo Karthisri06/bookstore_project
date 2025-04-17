@@ -8,7 +8,6 @@ export interface AuthRequest extends Request {
   };
 }
 
-// Authentication middleware to check if the user has a valid token
 export const authenticate = (
   req: AuthRequest,
   res: Response,
@@ -35,7 +34,7 @@ export const authenticate = (
   }
 };
 
-// Admin middleware to check if the user has an 'admin' role
+
 export const isAdmin = (
   req: AuthRequest,
   res: Response,

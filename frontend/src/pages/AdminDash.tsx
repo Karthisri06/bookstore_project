@@ -1,4 +1,4 @@
-// AdminDash.tsx
+
 import { useState, useEffect } from 'react';
 import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const AdminDash = () => {
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "admin") {
-      return; // Just do nothing — no redirect
+      return; 
     }
 
     axios.get("http://localhost:5000/books")

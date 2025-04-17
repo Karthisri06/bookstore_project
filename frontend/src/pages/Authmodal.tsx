@@ -17,26 +17,25 @@ const AuthModal: React.FC<AuthModalProps> = ({
   show,
   handleClose,
   handleLogin, 
-  handleSignup// Handle success after login
+  handleSignup
 }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // To display error messages
-  const [loading, setLoading] = useState(false); // To track loading state
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(""); // Reset any previous error message
-    setLoading(true); // Start loading spinner
+    setErrorMessage(""); 
+    setLoading(true);
 
     try {
       if (isLogin) {
-        await handleLogin(email, password);  // ✅ Call login
-        handleClose(); // Optional: Close modal on success
-      } else {
-        await handleSignup(email, password); // ✅ Call signup
-        setIsLogin(true); // Switch to login view after signup
+        await handleLogin(email, password);  
+        handleClose(); 
+        await handleSignup(email, password); 
+        setIsLogin(true); 
       }
     } catch (error) {
       let message = "Something went wrong.";
@@ -44,9 +43,9 @@ const AuthModal: React.FC<AuthModalProps> = ({
         message = error.message;
       }
   console.log(errorMessage);
-     // Set the error message from the service
+    
     } finally {
-      setLoading(false); // Stop loading spinner
+      setLoading(false); 
     }
   };
 
@@ -56,7 +55,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
         <Modal.Title>{isLogin ? "Login" : "Sign Up"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>} {/* Display error */}
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>} 
         
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">

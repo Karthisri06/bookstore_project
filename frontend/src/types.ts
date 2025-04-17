@@ -26,5 +26,5 @@ export interface Author {
   export interface AuthModal {
   show: boolean;
   handleClose: () => void;
-  handleLoginSuccess: () => void; // Added this for login success
+  handleLoginSuccess: () => void; 
 }

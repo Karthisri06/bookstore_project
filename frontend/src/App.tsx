@@ -74,7 +74,7 @@ const App: React.FC = () => {
       localStorage.setItem("token", res.data.token);
       login(
         { email: res.data.email, role: res.data.role },
-        res.data.token // make sure your backend sends a token
+        res.data.token 
       );
       
       closeAuthModal();

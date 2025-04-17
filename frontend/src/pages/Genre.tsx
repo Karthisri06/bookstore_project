@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import AuthModal from "../pages/Authmodal"; // Adjust path if needed
+import AuthModal from "../pages/Authmodal"; 
 import { useAuth } from "../services/AuthContext";
 
 interface Book {
@@ -13,14 +13,14 @@ interface Book {
   price: number;
   rating: number;
 }
-// (imports stay the same)
+
 
 const Genre = () => {
   const { genre } = useParams<{ genre: string }>();
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
-    useAuth();  // Get auth context
+    useAuth();  
   const navigate = useNavigate();
 
   const isLoggedIn = !!localStorage.getItem("token");

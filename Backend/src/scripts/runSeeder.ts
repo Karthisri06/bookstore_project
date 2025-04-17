@@ -1,4 +1,4 @@
-// src/scripts/runSeeder.ts
+
 import { AppDataSource } from "../data-source";
 import { fetchBooks } from "../seeders/fetchbooks";
 

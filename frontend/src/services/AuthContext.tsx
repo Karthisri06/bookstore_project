@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Login function stores token and user
   const login = (userData: User, token: string) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -51,7 +50,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     closeAuthModal();
   };
 
-  // Logout clears everything
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -62,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 const openAuthModal = () => setShowModal(true);
   const closeAuthModal = () => setShowModal(false);
 
-  // Memoize the value to prevent unnecessary re-renders
+
   const value: AuthContextType = useMemo(
     () => ({
       isAuthenticated,
@@ -82,7 +80,7 @@ const openAuthModal = () => setShowModal(true);
   );
 };
 
-// Custom hook for using the AuthContext
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

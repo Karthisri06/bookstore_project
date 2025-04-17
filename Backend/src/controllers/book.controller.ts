@@ -21,7 +21,7 @@ export const getBooks = async (req: Request, res: Response) => {
 export const getBookGenre = async (req: Request, res: Response) => {
   try {
     const genre = req.params.genre;
-    const books = await bookRepo.find({ where: { genre } }); // Get books by genre
+    const books = await bookRepo.find({ where: { genre } }); 
     res.json(books.map(book => ({
       id: book.id,
       title: book.title,
