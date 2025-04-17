@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
-import { useAuth } from "../services/AuthContext";  // Import the AuthContext hook
+import { useAuth } from "../services/AuthContext";  
 import axios from "axios";
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { isAuthenticated, openAuthModal, logout } = useAuth();  // Get auth context
+  const { isAuthenticated, openAuthModal, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -16,9 +16,9 @@ const Navbar: React.FC = () => {
         const response = await axios.get(
           `http://localhost:5000/books/search?q=${searchTerm}`
         );
-        const results = response.data; // Assuming the response returns an array of books
+        const results = response.data; 
 
-        // Pass the search results to the SearchResults page
+      
         navigate("/search-results", { state: { results } });
       } catch (error) {
         console.error("Search error:", error);

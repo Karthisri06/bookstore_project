@@ -1,15 +1,18 @@
-
 import { createContext, useContext, useState, useEffect } from "react";
+import { Book } from "../types";
 
+// Define CartItem with Book as the correct type
 type CartItem = {
   id: string;
   title: string;
   price: number;
+  book: Book; // Ensure that book is of type Book
+  quantity: number;
 };
 
 type CartContextType = {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem) => void; // Expecting CartItem as the argument here
   removeFromCart: (id: string) => void;
   clearCart: () => void;
 };
@@ -30,6 +33,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Update the addToCart function to take a CartItem as parameter
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => [...prev, item]);
   };

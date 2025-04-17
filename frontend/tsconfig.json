@@ -1,7 +1,18 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "types": ["vitest/globals", "node"]
+  
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/setupTests.ts"
   ]
 }

@@ -1,7 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Button, Spinner, Form, ListGroup } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Spinner,
+  Form,
+  ListGroup,
+  Modal,
+} from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAuth } from "../services/AuthContext";
 
@@ -41,8 +48,9 @@ const BookDetails = () => {
     book: "",
   });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
-
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [reviewAdded, setReviewAdded] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     axios
@@ -56,7 +64,9 @@ const BookDetails = () => {
         console.error("Error fetching book:", err);
         setLoading(false);
       });
+  }, [id]);
 
+  useEffect(() => {
     if (book?.title) {
       axios
         .get(`http://localhost:5000/reviews/book/${book.title}`)
@@ -67,10 +77,10 @@ const BookDetails = () => {
           console.error("Error fetching reviews:", err);
         });
     }
-  }, [id, book?.title]);
+  }, [book?.title]);
 
   const handleReviewChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setNewReview((prevReview) => ({
@@ -82,22 +92,34 @@ const BookDetails = () => {
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log("hi", newReview);
       const token = localStorage.getItem("token");
-      console.log(token, "token");
       await axios.post(`http://localhost:5000/reviews`, newReview, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      window.location.reload();
+      toast.success("Review added successfully!");
       setReviewAdded(true);
-
-      // const updatedBook = await axios.get(`http://localhost:5000/reviews/book/${id}`);
-      // setBook(updatedBook.data);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error("Error adding review:", error);
+      toast.error("Error submitting review. Please try again.");
     }
+  };
+
+  const handleBuyNow = () => {
+    if (!user || user.role !== "user") {
+      toast.error("Please login as a user to purchase.");
+      return;
+    }
+    setShowPurchaseModal(true);
+  };
+
+  const handleConfirmPurchase = () => {
+    toast.success("Purchase successful!");
+    setShowPurchaseModal(false);
   };
 
   if (loading)
@@ -138,13 +160,16 @@ const BookDetails = () => {
                 <Button variant="primary" className="me-2">
                   Add to Cart
                 </Button>
-                <Button variant="success">Buy Now</Button>
+                <Button variant="success" onClick={handleBuyNow}>
+                  Buy Now
+                </Button>
               </div>
             </Card.Body>
           </div>
         </div>
       </Card>
 
+      {/* Reviews Section */}
       <h4 className="mt-5">User Reviews:</h4>
 
       {reviews.length === 0 ? (
@@ -191,7 +216,6 @@ const BookDetails = () => {
             required
           />
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Comment</Form.Label>
           <Form.Control
@@ -204,7 +228,6 @@ const BookDetails = () => {
             required
           />
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Rating</Form.Label>
           <Form.Control
@@ -221,43 +244,39 @@ const BookDetails = () => {
             ))}
           </Form.Control>
         </Form.Group>
-
         <Button variant="primary" type="submit">
           Submit Review
         </Button>
       </Form>
 
-      {/* Show success message */}
-      {reviewAdded && (
-        <div className="alert alert-success mt-4">
-          Your review has been added!
-        </div>
-      )}
+      {/* Purchase Modal */}
+      <Modal show={showPurchaseModal} onHide={() => setShowPurchaseModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Purchase Summary</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <strong>Product:</strong> {book.title}
+          </p>
+          <p>
+            <strong>Author:</strong> {book.author}
+          </p>
+          <p>
+            <strong>Price:</strong> ₹499 (example)
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPurchaseModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleConfirmPurchase}>
+            Confirm Purchase
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-const BuyNowButton = ({ bookId }: { bookId: number }) => {
-  const { user } = useAuth();
-
-  const handleBuy = () => {
-    if (!user || user.role !== "user") {
-      toast.error("Please login as a user to purchase.");
-      return;
-    }
-
-    // Simulate purchase
-    toast.success("Purchase successful!");
-  };
-
-  return (
-    <button
-      className="bg-blue-600 text-white px-4 py-2 rounded"
-      onClick={handleBuy}
-    >
-      Buy Now
-    </button>
-  );
-};
-
 export default BookDetails;
+

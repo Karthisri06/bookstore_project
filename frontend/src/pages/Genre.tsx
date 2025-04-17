@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AuthModal from "../pages/Authmodal"; 
 import { useAuth } from "../services/AuthContext";
+import { useCart } from "../services/CartContext";
 
+// Define the Book interface
 interface Book {
   id: number;
   title: string;
@@ -14,14 +16,15 @@ interface Book {
   rating: number;
 }
 
-
 const Genre = () => {
   const { genre } = useParams<{ genre: string }>();
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
-    useAuth();  
+  
+  useAuth();  
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const isLoggedIn = !!localStorage.getItem("token");
 
@@ -99,26 +102,33 @@ const Genre = () => {
               </div>
 
               <div className="d-flex flex-column gap-2 mt-auto">
-                <button
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => {
-                    if (!isLoggedIn) setShowAuthModal(true);
-                    else alert(`Added ${book.title} to cart`);
-                  }}
-                >
-                  Add to Cart
-                </button>
+              <button
+  className="btn btn-sm btn-outline-primary"
+  onClick={() => {
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+    } else {
+      // addToCart(book,1);  
+      alert(`Added ${book.title} to cart`);
+    }
+  }}
+>
+  Add to Cart
+</button>
+
                 <button
                   className="btn btn-sm btn-success"
                   onClick={() => {
-                    if (!isLoggedIn){setShowAuthModal(true);
-
+                    if (!isLoggedIn) {
+                      setShowAuthModal(true);
+                    } else {
+                      alert(`Bought ${book.title}`);
                     }
-                    else alert(`Bought ${book.title}`);
                   }}
                 >
                   Buy Now
                 </button>
+
                 <button
                   className="btn btn-sm btn-outline-secondary"
                   onClick={() => navigate(`/book/${book.id}`)}
@@ -147,3 +157,4 @@ const Genre = () => {
 };
 
 export default Genre;
+

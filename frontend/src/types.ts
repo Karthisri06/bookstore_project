@@ -16,6 +16,7 @@ export interface Author {
     genre: string;
     price: number;
     isHotSelling?: boolean;
+    book:Book;
   }
   
   export interface Genre {
