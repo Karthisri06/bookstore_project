@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
-import { useAuth } from "../services/AuthContext";  
 import axios from "axios";
+import { useAuth } from "../services/AuthContext";
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,9 +55,9 @@ const Navbar: React.FC = () => {
 
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="btn btn-outline-secondary me-2">
+              {/* <Link to="/profile" className="btn btn-outline-secondary me-2">
                 <FaUserCircle size={20} />
-              </Link>
+              </Link> */}
               <button className="btn btn-outline-danger" onClick={() => {
     logout();
     navigate("/");

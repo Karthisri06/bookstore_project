@@ -4,7 +4,7 @@ import { Book } from "../entities/Book";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { User } from "../entities/User";
 
-export const publishBook = async (req: AuthRequest, res: Response):Promise<void> => {
+export const publishBook = async (req: AuthRequest, res: Response): Promise<void> => {
   const { title, description, genre, imageUrl, price } = req.body;
 
   try {
@@ -14,8 +14,8 @@ export const publishBook = async (req: AuthRequest, res: Response):Promise<void>
     const user = await userRepo.findOne({ where: { id: req.user?.id } });
 
     if (!user || user.role !== "author") {
-     res.status(403).json({ message: "Only authors can publish books" });
-     return 
+      res.status(403).json({ message: "Only authors can publish books" });
+      return;
     }
 
     const newBook = bookRepo.create({
@@ -24,18 +24,18 @@ export const publishBook = async (req: AuthRequest, res: Response):Promise<void>
       genre,
       imageUrl,
       price,
-      isHotSelling: false,
-      author: user
+      author: user, 
     });
 
     await bookRepo.save(newBook);
 
     res.status(201).json({ message: "Book published successfully", book: newBook });
-  } catch (err) {
-    console.error("Error publishing book:", err);
-    res.status(500).json({ message: "Failed to publish book" });
+  } catch (err:any) {
+    console.error("Error publishing book:", err.message,err.stack);
+    res.status(500).json({ message: "Failed to publish book", error: err.message  });
   }
 };
+
 
 export const getAuthorBooks = async (req: AuthRequest, res: Response) => {
   try {

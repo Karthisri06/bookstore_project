@@ -96,7 +96,7 @@ const App: React.FC = () => {
         onMaybeLater={closeAuthModal}
       />
   <ToastContainer />
-      <Routes>
+  <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={ <Profile />} />

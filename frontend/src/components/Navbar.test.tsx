@@ -3,18 +3,23 @@ import { describe, it, expect, vi } from "vitest";
 import Navbar from "./Navbar";
 import { BrowserRouter as Router } from "react-router-dom";
 
-// Mock the AuthContext for different cases
 vi.mock("../services/AuthContext", () => {
   return {
-    useAuth: vi.fn(() => ({
-      isAuthenticated: false,
-      logout: vi.fn(),
-    })),
+    useAuth: vi.fn(),
   };
 });
 
+
+import { useAuth } from "../services/AuthContext";
+
 describe("Navbar", () => {
   it("renders BookStore brand", () => {
+    (useAuth as any).mockReturnValue({
+      isAuthenticated: false,
+      logout: vi.fn(),
+      openAuthModal: vi.fn(),
+    });
+
     render(
       <Router>
         <Navbar />
@@ -22,10 +27,16 @@ describe("Navbar", () => {
     );
 
     const brand = screen.getByText("BookStore");
-    expect(brand.textContent).toBe("BookStore"); // no jest-dom needed
+    expect(brand.textContent).toBe("BookStore");
   });
 
   it("shows Login / Sign Up when not authenticated", () => {
+    (useAuth as any).mockReturnValue({
+      isAuthenticated: false,
+      logout: vi.fn(),
+      openAuthModal: vi.fn(),
+    });
+
     render(
       <Router>
         <Navbar />
@@ -37,11 +48,10 @@ describe("Navbar", () => {
   });
 
   it("shows Logout when authenticated", () => {
-    const mockedUseAuth = require("../services/AuthContext").useAuth;
-    mockedUseAuth.mockReturnValue({
+    (useAuth as any).mockReturnValue({
       isAuthenticated: true,
-      openAuthModal: vi.fn(),
       logout: vi.fn(),
+      openAuthModal: vi.fn(),
     });
 
     render(
@@ -54,4 +64,3 @@ describe("Navbar", () => {
     expect(logoutButton.textContent).toBe("Logout");
   });
 });
-

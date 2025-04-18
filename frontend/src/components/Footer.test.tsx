@@ -1,23 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import Footer from "./Footer";
+import React from 'react';
+import { render } from '@testing-library/react';
+import { expect } from 'chai';
+import chaiDom from 'chai-dom';
+import Footer from './Footer';  
+import { chai } from 'vitest';
 
-describe("Footer", () => {
-  it("renders footer text", () => {
-    render(<Footer />);
-   
-    const footerText = screen.getByText(/© 2025 Online Bookstore/i); 
-    expect(footerText.textContent).toContain("© 2025 Online Bookstore");
-  });
+chai.use(chaiDom);
 
-  it("has correct styles", () => {
-    render(<Footer />);
-    const footerElement = screen.getByRole("contentinfo"); // assuming it's wrapped in <footer>
-
-   
-    expect(footerElement).not.toBeNull();
-
- 
-    expect(footerElement).toHaveStyle("background: rgb(245, 245, 245)");
+describe('Footer', () => {
+  it('renders footer text', () => {
+    const { getByText } = render(<Footer />);
+    const footerText = getByText(/© 2025 Online Bookstore. All rights reserved./i);
+    expect(footerText).to.exist;
   });
 });

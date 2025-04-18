@@ -16,9 +16,6 @@ export class Book {
   @Column()
   title: string;
 
-  @Column()
-  authors: string;
-
   @Column({type:"text",nullable:true})
   description: string;
 
@@ -33,7 +30,10 @@ export class Book {
   isHotSelling: boolean;
 
   @ManyToOne(() => User, (user) => user.books, { nullable: true })
-  author: User; 
+  author?: User;
+  
+  @Column({ nullable: true })
+  authors?: string;
 
   @Column({ type: "float", nullable: true })
   price: number;
