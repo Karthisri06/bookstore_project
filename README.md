@@ -2,7 +2,7 @@ Online Bookstore
 An online bookstore web application built using React, TypeScript, Bootstrap, Node.js, TypeORM, MySQL, and JWT Authentication. 
 Users can browse books freely, sign up to leave reviews or purchase books, while admins and authors have role-based dashboards with specific capabilities.
 
-Features Completed So Far
+Features Completed So Far:
 Frontend (React + TypeScript + Bootstrap)
     • Home Page
         ◦ Book carousel that auto-slides.
@@ -46,14 +46,12 @@ Backend (Node.js + TypeScript + Express + MySQL + TypeORM)
         ◦ Admins can:
             ▪ View and manage all users and books.
             ▪ Assign authors to books.
-            ▪ Notify authors about assignments.
     • Author Role
         ◦ Authors can:
             ▪ Publish new books.
-            ▪ View notifications for assigned books.
     •  Backend Unit Testing (in progress)
         ◦ Testing Auth, Book APIs, role checks using vitest.
 
 
 Technologies Used
-    • Frontend: React, TypeScript, Bootstrap, React Testing Library, Jest
+    • Frontend: React, TypeScript, Bootstrap, React Testing Library, vitest
