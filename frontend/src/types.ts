@@ -7,17 +7,20 @@ export interface Author {
     password:string;
   }
   
-  export interface Book {
-    authors: string;
-    id: number;
-    title: string;
-    author: Author;
-    imageUrl: string;
-    genre: string;
-    price: number;
-    isHotSelling?: boolean;
-    book:Book;
-  }
+ 
+export interface Book {
+  id: number;
+  title: string;
+  authors: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  genre: string;
+  publishedDate: string;
+  pageCount: number;
+  rating: number;
+}
+
   
   export interface Genre {
     id: Key | null | undefined;
@@ -28,4 +31,12 @@ export interface Author {
   show: boolean;
   handleClose: () => void;
   handleLoginSuccess: () => void; 
+}
+
+export interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  quantity: number;
+  book: Book;
 }

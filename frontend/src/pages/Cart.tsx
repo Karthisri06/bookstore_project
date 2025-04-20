@@ -1,12 +1,14 @@
+import React from "react";
 import { useCart } from '../services/CartContext';
 import { Button, Table } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 const Cart = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
 
   const handleCheckout = () => {
-    alert("Proceeding to checkout...");
-    clearCart();
+    toast("Proceeding to checkout...");
+    clearCart(); 
   };
 
   return (

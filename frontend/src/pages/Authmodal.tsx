@@ -34,6 +34,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
       if (isLogin) {
         await handleLogin(email, password);  
         handleClose(); 
+      }else {
         await handleSignup(email, password); 
         setIsLogin(true); 
       }
@@ -42,6 +43,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
       if (error instanceof Error) {
         message = error.message;
       }
+      setErrorMessage(message);
   console.log(errorMessage);
     
     } finally {

@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";  
-import { Book } from "../types";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../services/AuthContext";  // Import the AuthContext
+import { Book, CartItem } from "../types";
 import { loginUser, signupUser } from "../services/authService";
 import AuthModal from "./Authmodal";
+import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
-
+import { toast } from "react-toastify";
+import { useCart } from "../services/CartContext";  // Import CartContext
 
 const Home = () => {
+  const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  // Use AuthContext
+  const { addToCart } = useCart();  // Use CartContext to manage cart
   const [hotBooks, setHotBooks] = useState<Book[]>([]);
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [genres, setGenres] = useState<string[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [maybeLater, setMaybeLater] = useState<boolean>(false);
-  const navigate = useNavigate(); 
- 
+  const navigate = useNavigate();
 
-  
-
+  // Fetch books and genres on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,22 +30,19 @@ const Home = () => {
     if (maybeLaterFlag === "true") {
       setMaybeLater(true);
     }
-  }, []);
+  }, [setIsLoggedIn]);
 
-
- 
-
+  // Handle login functionality
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await loginUser(email, password);
       localStorage.setItem("token", response.data.token);
-      console.log('test',response.data.user.role, response.data, response.data.user )
       localStorage.removeItem("maybeLater");
       setIsLoggedIn(true);
       setMaybeLater(false);
-      setShowModal(false);
+      closeAuthModal();
       window.location.reload();
-
+      navigate("/");
       console.log("Login successful");
     } catch (error) {
       console.error("Login failed:", error);
@@ -53,28 +50,30 @@ const Home = () => {
     }
   };
 
+  // Handle signup functionality
   const handleSignup = async (email: string, password: string) => {
     try {
-      console.log("hi")
       const response = await signupUser(email, password);
       localStorage.setItem("token", response.data.token);
       localStorage.removeItem("maybeLater");
       setIsLoggedIn(true);
       setMaybeLater(false);
-      setShowModal(false);
+      closeAuthModal();
       console.log("Signup successful");
     } catch (error) {
       console.error("Signup failed:", error);
-      alert("Signup failed. Please try again.");
+      toast("Signup failed. Please try again.");
     }
   };
 
+  // Handle "Maybe Later" functionality
   const handleMaybeLater = () => {
     localStorage.setItem("maybeLater", "true");
     setMaybeLater(true);
-    setShowModal(false);
+    closeAuthModal();
   };
 
+  // Fetch books from the backend
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -82,10 +81,12 @@ const Home = () => {
         const allBooks = res.data;
         setAllBooks(allBooks);
 
+        // Shuffle books for hot selling section
         const shuffled = [...allBooks].sort(() => 0.5 - Math.random());
         setHotBooks(shuffled.slice(0, 5));
         setFeaturedBooks(allBooks.slice(0, 15));
 
+        // Extract unique genres
         const seen = new Set<string>();
         const uniqueGenres: string[] = [];
         allBooks.forEach((book) => {
@@ -103,16 +104,42 @@ const Home = () => {
     fetchBooks();
   }, []);
 
+  // Filter books by selected genre
   const filterByGenre = (genre: string) => {
     const filteredBooks = allBooks.filter((book) => book.genre === genre);
     setFeaturedBooks(filteredBooks);
     navigate(`/genre/${genre}`);
   };
+
+  const handleAddToCart = (book: Book) => {
+    if (!isAuthenticated && !maybeLater) {
+      openAuthModal(); 
+    } else {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const newCart = [...cart, book];  // Add the book directly to cart
+  
+      localStorage.setItem("cart", JSON.stringify(newCart));
+  
+      toast.success(`${book.title} has been added to your cart!`);
+    }
+  };
+  
+
+  // Handle buying book now
+  const handleBuyNow = (book: Book) => {
+    if (!isAuthenticated && !maybeLater) {
+      openAuthModal();
+    } else {
+      console.log("Proceed to Buy", book.title);
+      toast.success(`Proceeding to buy ${book.title}`);
+    }
+  };
+
   return (
     <div className="container mt-5 pt-4" style={{ maxWidth: "1400px" }}>
       <AuthModal
         show={showModal}
-        handleClose={() => setShowModal(false)}
+        handleClose={closeAuthModal}
         handleLogin={handleLogin}
         handleSignup={handleSignup}
         onMaybeLater={handleMaybeLater} 
@@ -153,82 +180,70 @@ const Home = () => {
           </button>
         </div>
       </section>
-{/* Featured Section */}
-<section className="mb-5">
-  <h2 className="text-center mb-4">Featured Books</h2>
-  <div className="position-relative mb-5 px-4">
 
-    {/* Scrollable Cards */}
-    <div
-      id="featured-scroll"
-      className="d-flex overflow-auto px-3 py-2"
-      style={{
-        scrollBehavior: "smooth",
-        gap: "1.5rem",
-      }}
-    >
-      {featuredBooks.map((book) => (
-        <div
-          className="card shadow-sm border-0"
-          style={{
-            minWidth: "220px",
-            maxWidth: "220px",
-            transition: "transform 0.2s",
-          }}
-          key={book.id}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
-          <img
-            src={book.imageUrl || "/default-book-cover.jpg"}
-            className="card-img-top"
-            alt={book.title}
-            style={{ height: "220px", objectFit: "cover", borderTopLeftRadius: "0.5rem", borderTopRightRadius: "0.5rem" }}
-          />
-          <div className="card-body d-flex flex-column justify-content-between" style={{ height: "220px" }}>
-            <div>
-              <h5 className="card-title text-truncate">{book.title}</h5>
-              <p className="card-text text-muted small">{book.authors || "Unknown Author"}</p>
-              <p className="card-text text-success fw-bold">₹{book.price || "N/A"}</p>
-            </div>
-            <div className="mt-auto d-flex flex-column gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => {
-                  if (!isLoggedIn && !maybeLater) {
-                    setShowModal(true);
-                  } else {
-                    console.log("Added to cart");
-                  }
+      {/* Featured Section */}
+      <section className="mb-5">
+        <h2 className="text-center mb-4">Featured Books</h2>
+        <div className="position-relative mb-5 px-4">
+          <div
+            id="featured-scroll"
+            className="d-flex overflow-auto px-3 py-2"
+            style={{
+              scrollBehavior: "smooth",
+              gap: "1.5rem",
+            }}
+          >
+            {featuredBooks.map((book) => (
+              <div
+                className="card shadow-sm border-0"
+                style={{
+                  minWidth: "220px",
+                  maxWidth: "220px",
+                  transition: "transform 0.2s",
                 }}
+                key={book.id}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
               >
-                Add to Cart
-              </button>
-              <button
-                className="btn btn-sm btn-success"
-                onClick={() => {
-                  if (!isLoggedIn && !maybeLater) {
-                    setShowModal(true);
-                  } else {
-                    console.log("Proceed to Buy");
-                  }
-                }}
-              >
-                Buy Now
-              </button>
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => navigate(`/book/${book.id}`)}
-              >
-                More Details
-              </button>
-            </div>
+                <img
+                  src={book.imageUrl || "/default-book-cover.jpg"}
+                  className="card-img-top"
+                  alt={book.title}
+                  style={{ height: "220px", objectFit: "cover", borderTopLeftRadius: "0.5rem", borderTopRightRadius: "0.5rem" }}
+                />
+                <div className="card-body d-flex flex-column justify-content-between" style={{ height: "220px" }}>
+                  <div>
+                    <h5 className="card-title text-truncate">{book.title}</h5>
+                    <p className="card-text text-muted small">{book.authors || "Unknown Author"}</p>
+                    <p className="card-text text-success fw-bold">₹{book.price || "N/A"}</p>
+                  </div>
+                  <div className="mt-auto d-flex flex-column gap-2">
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => handleAddToCart(book)}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => handleBuyNow(book)}
+                    >
+                      Buy Now
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => navigate(`/book/${book.id}`)}
+                    >
+                      More Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
+
       {/* Genre Buttons */}
       <section>
         <h2 className="text-center mb-4">Browse by Genre</h2>
@@ -249,6 +264,8 @@ const Home = () => {
 };
 
 export default Home;
+
+
 
 
 

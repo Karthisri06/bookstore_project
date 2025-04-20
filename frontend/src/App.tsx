@@ -13,8 +13,9 @@ import Genre from "./pages/Genre";
 import BookDetails from "./pages/BookDetails";
 import Layout from "./components/Layout";
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from "react-bootstrap";
+import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
@@ -37,21 +38,28 @@ const App: React.FC = () => {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      console.log("hi")
+      console.log("Attempting login...");
       const res = await loginUser(email, password);
-      console.log("Login success:", res.data);
+      console.log("Login success:", res.data); 
+  
+  
       localStorage.setItem("token", res.data.token);
+  
       login(
-        { email: res.data.email, role: res.data.role },
-        res.data.token 
+        {
+          email: res.data.email,
+          role: res.data.role,
+          name: res.data.name, 
+        },
+        res.data.token
       );
-      
+  
       closeAuthModal();
-
-      const { role } = res.data.user;
+  
+   
+      const { role } = res.data;
       console.log("Logged in user role:", role);
-
-
+  
       if (role === "admin") {
         navigate("/admin");
       } else if (role === "author") {
@@ -59,29 +67,25 @@ const App: React.FC = () => {
       } else {
         navigate("/");
       }
-
-      window.location.reload();
-
     } catch (err) {
-      console.error("Login failed:", err);
-      alert("Login failed. Try again.");
+      console.error("Login failed:", err); 
+      toast("Login failed. Please check your credentials.");
     }
   };
-
+  
   const handleSignup = async (email: string, password: string) => {
     try {
       const res = await signupUser(email, password);
-      localStorage.setItem("token", res.data.token);
-      login(
-        { email: res.data.email, role: res.data.role },
-        res.data.token 
-      );
-      
+      console.log("Full response object:",res);
+      // console.log("SignUp success:",res.data);
+      toast(res.data.message || "Signup successful! Please login.");
       closeAuthModal();
-    } catch (err) {
-      alert("Signup failed. Try again.");
+    } catch (err: any) {
+      console.error("Signup failed:", err);
+      toast(err.response?.data?.message || "Signup failed. Please try again.");
     }
   };
+  
 
 
   return (

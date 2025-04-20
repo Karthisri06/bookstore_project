@@ -50,8 +50,8 @@ Backend (Node.js + TypeScript + Express + MySQL + TypeORM)
         ◦ Authors can:
             ▪ Publish new books.
     •  Backend Unit Testing (in progress)
-        ◦ Testing Auth, Book APIs, role checks using vitest.
+        ◦ Testing Auth, Book APIs, role checks using jest.
 
 
 Technologies Used
-    • Frontend: React, TypeScript, Bootstrap, React Testing Library, vitest
+    • Frontend: React, TypeScript, Bootstrap, React Testing Library, vitest`

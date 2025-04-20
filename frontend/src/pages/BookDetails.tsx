@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAuth } from "../services/AuthContext";
+import { useCart } from "../services/CartContext";
 
 interface Review {
   book: string;
@@ -27,6 +28,7 @@ interface Book {
   rating: number;
   imageUrl: string;
   genre: string;
+  price: number;
   reviews: Review[];
 }
 
@@ -36,6 +38,14 @@ interface ReviewData {
   rating: number;
   user: string;
 }
+
+type CartItem = {
+  id: string;
+  title: string;
+  price: number;
+  book: Book;
+  quantity: number;
+};
 
 const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,8 +59,8 @@ const BookDetails = () => {
   });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [reviewAdded, setReviewAdded] = useState(false);
   const { user } = useAuth();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     axios
@@ -58,13 +68,17 @@ const BookDetails = () => {
       .then((res) => {
         setBook(res.data);
         setLoading(false);
-        setNewReview((prev) => ({ ...prev, book: res.data.title }));
+        setNewReview((prev) => ({
+          ...prev,
+          book: res.data.title,
+          user: user?.name || "",
+        }));
       })
       .catch((err) => {
         console.error("Error fetching book:", err);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     if (book?.title) {
@@ -91,6 +105,11 @@ const BookDetails = () => {
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast.error("Please log in to submit a review.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       await axios.post(`http://localhost:5000/reviews`, newReview, {
@@ -99,10 +118,10 @@ const BookDetails = () => {
         },
       });
       toast.success("Review added successfully!");
-      setReviewAdded(true);
+      setNewReview({ user: user.name, comment: "", rating: 5, book: book?.title || "" });
       setTimeout(() => {
         window.location.reload();
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.error("Error adding review:", error);
       toast.error("Error submitting review. Please try again.");
@@ -122,12 +141,28 @@ const BookDetails = () => {
     setShowPurchaseModal(false);
   };
 
+  const handleAddToCart = () => {
+    if (!book) return;
+
+    const cartItem: CartItem = {
+      id: String(book.id),
+      title: book.title,
+      price: book.price,
+      book: book,
+      quantity: 1,
+    };
+
+    // addToCart(cartItem);
+    toast.success("Book added to cart!");
+  };
+
   if (loading)
     return (
       <div className="text-center mt-5">
         <Spinner animation="border" />
       </div>
     );
+
   if (!book)
     return <p className="text-danger text-center mt-4">Book not found</p>;
 
@@ -155,9 +190,12 @@ const BookDetails = () => {
               <Card.Text>
                 <strong>Rating:</strong> ⭐ {book.rating}/5
               </Card.Text>
+              <Card.Text>
+                <strong>Price:</strong> ₹{book.price}
+              </Card.Text>
 
               <div className="d-grid gap-2 d-md-block mt-3">
-                <Button variant="primary" className="me-2">
+                <Button variant="primary" className="me-2" onClick={handleAddToCart}>
                   Add to Cart
                 </Button>
                 <Button variant="success" onClick={handleBuyNow}>
@@ -171,7 +209,6 @@ const BookDetails = () => {
 
       {/* Reviews Section */}
       <h4 className="mt-5">User Reviews:</h4>
-
       {reviews.length === 0 ? (
         <p className="text-muted">No reviews yet. Be the first to review!</p>
       ) : (
@@ -193,61 +230,43 @@ const BookDetails = () => {
 
       {/* Review Form */}
       <h4 className="mt-5">Add Your Review:</h4>
-      <Form onSubmit={handleSubmitReview}>
-        <Form.Group className="mb-3">
-          <Form.Label>User</Form.Label>
-          <Form.Control
-            type="text"
-            name="user"
-            value={newReview.user}
-            onChange={handleReviewChange}
-            placeholder="Enter your username"
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Book Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="book"
-            value={newReview.book}
-            onChange={handleReviewChange}
-            placeholder="Enter book name"
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Comment</Form.Label>
-          <Form.Control
-            as="textarea"
-            name="comment"
-            value={newReview.comment}
-            onChange={handleReviewChange}
-            rows={3}
-            placeholder="Write your review"
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Rating</Form.Label>
-          <Form.Control
-            as="select"
-            name="rating"
-            value={newReview.rating}
-            onChange={handleReviewChange}
-            required
-          >
-            {[5, 4, 3, 2, 1].map((rating) => (
-              <option key={rating} value={rating}>
-                {rating} Stars
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit Review
-        </Button>
-      </Form>
+      {user ? (
+        <Form onSubmit={handleSubmitReview}>
+          <Form.Group className="mb-3">
+            <Form.Label>Comment</Form.Label>
+            <Form.Control
+              as="textarea"
+              name="comment"
+              value={newReview.comment}
+              onChange={handleReviewChange}
+              rows={3}
+              placeholder="Write your review"
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Rating</Form.Label>
+            <Form.Control
+              as="select"
+              name="rating"
+              value={newReview.rating}
+              onChange={handleReviewChange}
+              required
+            >
+              {[5, 4, 3, 2, 1].map((rating) => (
+                <option key={rating} value={rating}>
+                  {rating} Stars
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Submit Review
+          </Button>
+        </Form>
+      ) : (
+        <p className="text-danger">Please log in to write a review.</p>
+      )}
 
       {/* Purchase Modal */}
       <Modal show={showPurchaseModal} onHide={() => setShowPurchaseModal(false)}>
@@ -262,7 +281,7 @@ const BookDetails = () => {
             <strong>Author:</strong> {book.author}
           </p>
           <p>
-            <strong>Price:</strong> ₹499 (example)
+            <strong>Price:</strong> ₹{book.price}
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -279,4 +298,6 @@ const BookDetails = () => {
 };
 
 export default BookDetails;
+
+
 

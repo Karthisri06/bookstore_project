@@ -4,8 +4,10 @@ import axios from "axios";
 import AuthModal from "../pages/Authmodal"; 
 import { useAuth } from "../services/AuthContext";
 import { useCart } from "../services/CartContext";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
-// Define the Book interface
+
 interface Book {
   id: number;
   title: string;
@@ -43,6 +45,21 @@ const Genre = () => {
     }
   }, [genre]);
 
+
+  const handleSignup = async (email: string, password: string) => {
+    try {
+      const res = await axios.post("http://localhost:5000/auth/register", {
+        email,
+        password,
+      });
+      toast("Signup successful:", res.data);
+    } catch (error) {
+      console.error("Signup failed:", error);
+      throw new Error("Signup failed. Try a different email.");
+    }
+  };
+
+
   const handleLogin = async (email: string, password: string) => {
     try {
       const res = await axios.post("http://localhost:5000/auth/login", {
@@ -57,18 +74,6 @@ const Genre = () => {
     }
   };
 
-  const handleSignup = async (email: string, password: string) => {
-    try {
-      const res = await axios.post("http://localhost:5000/auth/signup", {
-        email,
-        password,
-      });
-      console.log("Signup successful:", res.data);
-    } catch (error) {
-      console.error("Signup failed:", error);
-      throw new Error("Signup failed. Try a different email.");
-    }
-  };
 
   return (
     <div className="container py-5">
@@ -109,7 +114,7 @@ const Genre = () => {
       setShowAuthModal(true);
     } else {
       // addToCart(book,1);  
-      alert(`Added ${book.title} to cart`);
+      toast(`Added ${book.title} to cart`);
     }
   }}
 >
@@ -122,7 +127,7 @@ const Genre = () => {
                     if (!isLoggedIn) {
                       setShowAuthModal(true);
                     } else {
-                      alert(`Bought ${book.title}`);
+                      toast(`Bought ${book.title}`);
                     }
                   }}
                 >

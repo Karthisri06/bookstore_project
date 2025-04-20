@@ -7,48 +7,63 @@ import jwt from "jsonwebtoken";
 import { validate } from "class-validator";
 import { AuthRequest } from "../authrequest";
 
-  
+
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
-    const userRepo = AppDataSource.getRepository(User);
-    const { email, password } = req.body;
-  
-    console.log("Register request body:", req.body);
-  
-    try {
-      const existingUser = await userRepo.findOneBy({ email });
-      console.log("Existing user:", existingUser);
-  
-      if (existingUser) {
-        res.status(400).json({ message: "Email already exists" });
-        return;
-      }
-  
-      const newUser = new User();
-      newUser.email = email;
-      newUser.password = await bcrypt.hash(password, 10);
-      newUser.role = "user";
-  
-      console.log("New user before validation:", newUser);
-  
-      const errors = await validate(newUser);
-      console.log("Validation errors:", errors);
-  
-      if (errors.length > 0) {
-        res.status(400).json({ message: "Validation failed", errors });
-        return;
-      }
-  
-      await userRepo.save(newUser);
-      console.log("User saved successfully!");
-  
-      res.status(201).json({ message: "User registered successfully" });
-  
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ message: "Server error" });
+  const userRepo = AppDataSource.getRepository(User);
+  const { email, password } = req.body;
+
+  console.log("Register request body:", req.body);
+
+  try {
+    const existingUser = await userRepo.findOneBy({ email });
+    console.log("Existing user:", existingUser);
+
+    if (existingUser) {
+      res.status(400).json({ message: "Email already exists" });
+      return;
     }
-  };
+
+    const newUser = new User();
+    newUser.email = email;
+    newUser.password = await bcrypt.hash(password, 10);
+    newUser.role = "user";
+
+    console.log("New user before validation:", newUser);
+
+    const errors = await validate(newUser);
+    console.log("Validation errors:", errors);
+
+    if (errors.length > 0) {
+      res.status(400).json({ message: "Validation failed", errors });
+      return;
+    }
+
+    await userRepo.save(newUser);
+    console.log("User saved successfully!");
+
+
+    const token = jwt.sign(
+      { userId: newUser.id, role: newUser.role },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+      }
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
   export const loginUser = async (req: Request, res: Response): Promise<void> => {

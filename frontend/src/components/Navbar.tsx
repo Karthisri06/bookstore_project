@@ -3,11 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../services/AuthContext";
+import { useCart } from '../services/CartContext';
+
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthenticated, openAuthModal, logout } = useAuth();
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

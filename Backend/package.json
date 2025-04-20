@@ -8,7 +8,8 @@
     "createMigrate": "npx typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
     "runmigration": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "revert": "npx typeorm-ts-node-commonjs migration:revert -d src/data-source.ts",
-      "seed": "ts-node src/scripts/runSeeder.ts"
+    "seed": "ts-node src/scripts/runSeeder.ts",
+    "test1": "jest"
   },
   "keywords": [],
   "author": "",
@@ -29,13 +30,18 @@
     "mysql2": "^3.14.0",
     "nodemon": "^3.1.9",
     "reflect-metadata": "^0.2.2",
+    "supertest": "^7.1.0",
     "typeorm": "^0.3.22"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.14.1",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"

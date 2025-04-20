@@ -10,6 +10,7 @@ import {
 interface User {
   email: string;
   role: string;
+  name:string;
 }
 
 interface AuthContextType {
