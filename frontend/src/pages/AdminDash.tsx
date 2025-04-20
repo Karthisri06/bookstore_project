@@ -63,6 +63,7 @@ const AdminDash = () => {
             <Card.Body>
               <Card.Title>❌ Unassigned Books</Card.Title>
               <Card.Text>{unassignedBooks.length} books without authors</Card.Text>
+              useNavigate("/unassigned");
             </Card.Body>
           </Card>
         </Col>

@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
           BookStore
         </Link>
 
-        <div className="d-flex mx-auto align-items-center" style={{ gap: "1rem", width: "50%" }}>
+        {/* <div className="d-flex mx-auto align-items-center" style={{ gap: "1rem", width: "50%" }}>
           <form className="d-flex flex-grow-1" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
               <FaSearch />
             </button>
           </form>
-        </div>
+        </div> */}
         <div className="d-flex align-items-center">
           <Link to="/cart" className="btn btn-outline-primary me-2">
             <FaShoppingCart size={20} />

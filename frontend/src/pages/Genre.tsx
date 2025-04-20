@@ -66,9 +66,24 @@ const Genre = () => {
         email,
         password,
       });
+
+      const data = res.data;
+      
+      // if (!data || !data.token || !data.user) {
+      //   throw new Error("Invalid login response");
+      // }
+      console.log("Login successful", data);
+      
       localStorage.setItem("token", res.data.token);
       setShowAuthModal(false);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      setUser(data.user); 
+  
+      handleClose();
     } catch (error) {
+
+
       console.error("Login failed:", error);
       throw new Error("Login failed. Please check your credentials.");
     }
@@ -162,4 +177,12 @@ const Genre = () => {
 };
 
 export default Genre;
+
+function setUser(user: any) {
+  throw new Error("Function not implemented.");
+}
+
+function handleClose() {
+  throw new Error("Function not implemented.");
+}
 

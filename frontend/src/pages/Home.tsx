@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../services/AuthContext";  // Import the AuthContext
+import { useAuth } from "../services/AuthContext"; 
 import { Book, CartItem } from "../types";
 import { loginUser, signupUser } from "../services/authService";
 import AuthModal from "./Authmodal";
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
-import { useCart } from "../services/CartContext";  // Import CartContext
+import { useCart } from "../services/CartContext"; 
+import { ToastContainer } from "react-toastify"; 
 
 const Home = () => {
   const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  // Use AuthContext
@@ -36,14 +37,22 @@ const Home = () => {
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await loginUser(email, password);
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.token);
       localStorage.removeItem("maybeLater");
       setIsLoggedIn(true);
       setMaybeLater(false);
       closeAuthModal();
+      if (response.user.role === "admin") {
+        navigate("/admin");
+      } else if (response.user.role === "author") {
+        navigate("/author");
+      } else {
+        navigate("/");
+      }
+  
       window.location.reload();
-      navigate("/");
       console.log("Login successful");
+      toast("Login succes!");
     } catch (error) {
       console.error("Login failed:", error);
       alert("Login failed. Please try again.");
