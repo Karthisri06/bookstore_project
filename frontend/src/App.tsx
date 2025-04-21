@@ -16,6 +16,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import UnassignedBooksAssign from "./pages/unassingedBooks";
+import PrivateRoute from "./components/PrivateRoutes";
 
 
 
@@ -40,9 +42,13 @@ const App: React.FC = () => {
     try {
       console.log("Attempting login...");
       const res = await loginUser(email, password);
-      console.log("Login success:", res.data); 
+      console.log("Login success:", res.data.token); 
   
+      if (!res || !res.data) {
+        throw new Error("Invalid response from server");
+      }
   
+      console.log("Login success:", res.data.token);
       localStorage.setItem("token", res.data.token);
   
       login(
@@ -61,8 +67,12 @@ const App: React.FC = () => {
       console.log("Logged in user role:", role);
   
       if (role === "admin") {
+        console.log("Hi admin")
+        toast("Logged in as a admin")
         navigate("/admin");
       } else if (role === "author") {
+        console.log("Hi author")
+        toast("logged in as a author")
         navigate("/author");
       } else {
         navigate("/");
@@ -101,16 +111,21 @@ const App: React.FC = () => {
       />
   <ToastContainer />
   <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={ <Profile />} />
-          <Route path="/cart" element={ <Cart /> } />
-          <Route path="/admin" element={<AdminDash />} />
-          <Route path="/author" element={ <AuthDash />} />
-          <Route path="/genre/:genre" element={<Genre/>} />
-          <Route path="/book/:id" element={<BookDetails />} />
-        </Route>
-      </Routes>
+  <Route element={<Layout />}>
+    <Route path="/" element={<Home />} />
+    <Route path="/profile" element={<PrivateRoute element={<Profile />} />} />
+    <Route path="/cart" element={<PrivateRoute element={<Cart />} />} />
+
+    <Route path="/admin" element={<PrivateRoute element={<AdminDash />} isAdmin />} />
+    <Route path="/admin/unassigned" element={<PrivateRoute element={<UnassignedBooksAssign />} isAdmin />} />
+
+    <Route path="/author" element={<PrivateRoute element={<AuthDash />} isAuthor />} />
+
+    <Route path="/genre/:genre" element={<Genre />} />
+    <Route path="/book/:id" element={<BookDetails />} />
+  </Route>
+</Routes>
+
     </>
     
   );

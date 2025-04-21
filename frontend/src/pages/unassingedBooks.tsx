@@ -15,12 +15,16 @@ interface Author {
 
 const mockBooks: Book[] = [
   { id: 1, title: 'Mystery of the Lost Book' },
-  { id: 2, title: 'The Untold Story' }
+  { id: 2, title: 'The Untold Story' },
+  { id: 3, title: 'Test ex 1' },
+  { id: 4, title: 'Test ex 2' }
 ];
 
 const mockAuthors: Author[] = [
   { id: 101, name: 'Karthisri K.', email: 'karthisri@example.com' },
-  { id: 102, name: 'Deepak D.', email: 'deepak@example.com' }
+  { id: 102, name: 'Test1 .', email: 'test1@example.com' },
+  { id: 103, name: 'Test2 .', email: 'test2@example.com' },
+  { id: 104, name: 'Test3 .', email: 'test3@example.com' }
 ];
 
 const UnassignedBooksAssign: React.FC = () => {

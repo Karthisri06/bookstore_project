@@ -9,7 +9,8 @@
     "runmigration": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "revert": "npx typeorm-ts-node-commonjs migration:revert -d src/data-source.ts",
     "seed": "ts-node src/scripts/runSeeder.ts",
-    "test1": "jest"
+    "test1": "jest",
+    "test1:coverage":"jest --coverage"
   },
   "keywords": [],
   "author": "",

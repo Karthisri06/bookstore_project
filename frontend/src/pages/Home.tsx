@@ -11,7 +11,7 @@ import { useCart } from "../services/CartContext";
 import { ToastContainer } from "react-toastify"; 
 
 const Home = () => {
-  const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  // Use AuthContext
+  const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  
   const { addToCart } = useCart();  // Use CartContext to manage cart
   const [hotBooks, setHotBooks] = useState<Book[]>([]);
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
@@ -43,6 +43,8 @@ const Home = () => {
       setMaybeLater(false);
       closeAuthModal();
       if (response.user.role === "admin") {
+        console.log("hi admin")
+        toast("logged in as a admin")
         navigate("/admin");
       } else if (response.user.role === "author") {
         navigate("/author");
@@ -75,7 +77,7 @@ const Home = () => {
     }
   };
 
-  // Handle "Maybe Later" functionality
+  // "Maybe Later" functionality
   const handleMaybeLater = () => {
     localStorage.setItem("maybeLater", "true");
     setMaybeLater(true);

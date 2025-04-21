@@ -69,9 +69,9 @@ const Genre = () => {
 
       const data = res.data;
       
-      // if (!data || !data.token || !data.user) {
-      //   throw new Error("Invalid login response");
-      // }
+      if (!data || !data.token || !data.user) {
+        throw new Error("Invalid login response");
+      }
       console.log("Login successful", data);
       
       localStorage.setItem("token", res.data.token);

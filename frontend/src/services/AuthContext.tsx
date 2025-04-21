@@ -10,7 +10,7 @@ import {
 interface User {
   email: string;
   role: string;
-  name:string;
+  name: string;
 }
 
 interface AuthContextType {
@@ -31,14 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // On app load, check if user and token exist in localStorage
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
 
     if (token && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Error parsing user from localStorage", error);
+      }
     }
   }, []);
 
@@ -47,8 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);
-    window.location.reload();
     closeAuthModal();
+    // window.location.reload();
   };
 
   const logout = () => {
@@ -58,11 +63,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
-const openAuthModal = () => setShowModal(true);
+  const openAuthModal = () => setShowModal(true);
   const closeAuthModal = () => setShowModal(false);
 
-
-  const value: AuthContextType = useMemo(
+  const value = useMemo(
     () => ({
       isAuthenticated,
       user,
@@ -76,11 +80,8 @@ const openAuthModal = () => setShowModal(true);
     [isAuthenticated, user, showModal]
   );
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

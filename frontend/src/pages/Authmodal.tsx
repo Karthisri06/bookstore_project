@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
-// import { login } from "../services/authService";
 
 type AuthModalProps ={
   show: boolean;

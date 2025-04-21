@@ -1,12 +1,11 @@
 import { AppDataSource } from "../data-source";
 import { Book } from "../entities/Book";
-import { Genre } from "../entities/Genre";
+
 import axios from "axios";
 
 export const fetchBooks = async () => {
   try {
     const bookRepo = AppDataSource.getRepository(Book);
-    const genreRepo = AppDataSource.getRepository(Genre);
 
     const genres = [
       "fiction",

@@ -7,7 +7,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     coverage: {
-      reporter: ['text', 'lcov'], // 'lcov' creates HTML report
+      reporter: ['text', 'lcov'],
       exclude: ['node_modules/', 'src/main.tsx', 'src/vite-env.d.ts'],
     },
   },

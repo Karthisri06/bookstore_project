@@ -36,21 +36,7 @@ const Navbar: React.FC = () => {
           BookStore
         </Link>
 
-        {/* <div className="d-flex mx-auto align-items-center" style={{ gap: "1rem", width: "50%" }}>
-          <form className="d-flex flex-grow-1" onSubmit={handleSearch}>
-            <input
-              className="form-control me-2"
-              type="search"
-              placeholder="Search books..."
-              aria-label="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="btn btn-outline-secondary" type="submit">
-              <FaSearch />
-            </button>
-          </form>
-        </div> */}
+      
         <div className="d-flex align-items-center">
           <Link to="/cart" className="btn btn-outline-primary me-2">
             <FaShoppingCart size={20} />
@@ -58,9 +44,7 @@ const Navbar: React.FC = () => {
 
           {isAuthenticated ? (
             <>
-              {/* <Link to="/profile" className="btn btn-outline-secondary me-2">
-                <FaUserCircle size={20} />
-              </Link> */}
+           
               <button className="btn btn-outline-danger" onClick={() => {
     logout();
     navigate("/");

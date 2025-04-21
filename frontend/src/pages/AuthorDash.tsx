@@ -25,14 +25,29 @@ const AuthorDashboard: React.FC = () => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Romance', 'Sci-Fi'];
+  const genres = [   
+    "fiction",
+    "romance",
+    "science",
+    "fantasy",
+    "mystery",
+    "biography",
+    "history",
+    "art",
+    "self-help",
+    "children",
+    "poetry",
+    "horror",
+    "adventure",
+    "comics",
+    "travel"];
 
   const fetchBooks = async () => {
     setIsFetching(true);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/login');
+        navigate('/author');
         return;
       }
       const res = await axios.get('http://localhost:5000/author/my-books', {
@@ -58,7 +73,7 @@ const AuthorDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/login');
+        navigate('/author');
         return;
       }
 
