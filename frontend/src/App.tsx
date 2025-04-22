@@ -58,7 +58,8 @@ const App: React.FC = () => {
         {
           email: res.data.email,
           role: res.data.role,
-          name: res.data.name, 
+          name: res.data.name,
+          userName: ""
         },
         res.data.token
       );

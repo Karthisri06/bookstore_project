@@ -4,7 +4,7 @@ import axios from "axios";
 import { Card, Button, Spinner, Form, ListGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAuth } from "../FormComponents/AuthContext";
-import { useCart } from "../Cart/CartContext"; // Import useCart hook
+import { useCart } from "../Cart/CartContext"; 
 import { CartItem } from "../types";
 import { Book } from "../types";
 
@@ -38,6 +38,9 @@ const BookDetails = () => {
   const [reviewAdded, setReviewAdded] = useState(false);
   const { user } = useAuth();
   const { addToCart } = useCart(); 
+  const isLoggedIn = !!localStorage.getItem("token");
+
+
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -113,26 +116,24 @@ const BookDetails = () => {
       toast.error("Something went wrong.");
     }
   };
-  const handleAddToCart = () => {
-    if (!user) {
-      toast.info("Login to add to cart.");
-      return;
-    }
-  
-    if (book && book.id && book.title && book.price) {
-      const cartItem: CartItem = {
-        id: book.id,
-        title: book.title,
-        price: book.price,
-        quantity: 1,
-        book: book,
-      };
-      addToCart(cartItem);
-      toast.success(`${book.title} added to cart!`);
-    } else {
-      toast.error("Failed to add book to cart.");
-    }
-  };
+   
+   const handleAddToCart = (book: Book) => {
+     if (!user) {
+       toast.info("Login to add to cart");
+       return;
+     }
+   
+     addToCart({
+       id: book.id,
+       bookName: book.title,
+       description: book.description,
+       price: book.price,
+       imageUrl: book.imageUrl,
+       userName: user?.userName || "user",
+     });
+     
+     toast.success(`${book.title} has been added to your cart!`);
+   };
   
   
   if (loading)
@@ -144,6 +145,7 @@ const BookDetails = () => {
 
   if (!book)
     return <p className="text-danger text-center mt-4">Book not found</p>;
+
 
   return (
     <div className="container mt-4">
@@ -171,9 +173,23 @@ const BookDetails = () => {
               </Card.Text>
 
               <div className="d-grid gap-2 d-md-block mt-3">
-                <Button variant="primary" className="me-2" onClick={handleAddToCart}>
-                  Add to Cart
-                </Button>
+              <Button
+  variant="outline-primary"
+  size="sm"
+  onClick={() => {
+    if (!user) {
+      toast.info("Please log in to add items to your cart.");
+      return;
+    }
+
+    handleAddToCart(book); 
+  }}
+>
+  Add to Cart
+</Button>
+
+
+
                 <Button variant="success">
                   Buy Now
                 </Button>

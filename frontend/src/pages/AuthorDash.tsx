@@ -9,20 +9,14 @@ interface Book {
   description: string;
   genre: string;
   price: number;
-  
 }
 
 const AuthorDashboard: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
-  const [newBook, setNewBook] = useState({
-    title: '',
-    description: '',
-    genre: 'Fiction',  
-    price: 0,
-  });
+  const [newBook, setNewBook] = useState({ title: '', description: '', genre: 'Fiction', price: 0 });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -32,61 +26,42 @@ const AuthorDashboard: React.FC = () => {
     setIsFetching(true);
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
+      if (!token) return navigate('/');
       const res = await axios.get('http://localhost:5000/author/my-books', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBooks(res.data);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        console.error('Axios error response:', err.response);
-        console.error('Status:', err.response?.status);
-      }
       setError('Error fetching books');
+    } finally {
+      setIsFetching(false);
     }
   };
 
   const handleAddBook = async () => {
-    if (!newBook.title || !newBook.description || newBook.price <= 0) {
-      setError('Please fill in all fields');
-      return;
-    }
-
+    if (!newBook.title || !newBook.description || newBook.price <= 0) return setError('Please fill in all fields');
     setIsLoading(true);
-    setError(null);
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
-
-    
+      if (!token) return navigate('/');
       await axios.post('http://localhost:5000/author/publish', newBook, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNewBook({ title: '', description: '', genre: 'Fiction', price: 0 });
-      fetchBooks(); 
       setSuccess('Book published successfully!');
-    } catch (err) {
+      fetchBooks();
+    } catch {
       setError('Error adding book');
-      console.error('Error adding book:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
+  useEffect(() => { fetchBooks(); }, []);
 
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* Sidebar */}
         <div className="col-md-3 bg-dark text-white p-4">
           <h2 className="h4">Author Dashboard</h2>
           <ul className="list-unstyled">
@@ -95,90 +70,51 @@ const AuthorDashboard: React.FC = () => {
           </ul>
         </div>
 
-        {/* Main Content */}
         <div className="col-md-9 p-4">
           <h1 className="mb-4">Welcome, Author!</h1>
 
-          {/* Error or Success Messages */}
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
 
-          {/* List of Books */}
           <div className="mb-4">
             <h2 className="h5">My Books</h2>
-            {isFetching ? (
-              <Spinner animation="border" variant="primary" />
-            ) : books.length === 0 ? (
-              <p>No books published yet.</p>
-            ) : (
-              <Row>
-                {books.map((book) => (
+            {isFetching ? <Spinner animation="border" /> :
+              books.length === 0 ? <p>No books published yet.</p> : (
+                <Row>{books.map((book) => (
                   <Col key={book.id} md={4} className="mb-3">
-                    <Card>
-                      <Card.Body>
-                        <Card.Title>{book.title}</Card.Title>
-                        <Card.Text>{book.description}</Card.Text>
-                        <Card.Text><strong>Genre:</strong> {book.genre}</Card.Text>
-                        <Card.Text><strong>Price:</strong> ${book.price}</Card.Text>
-                      </Card.Body>
-                    </Card>
+                    <Card><Card.Body>
+                      <Card.Title>{book.title}</Card.Title>
+                      <Card.Text>{book.description}</Card.Text>
+                      <Card.Text><strong>Genre:</strong> {book.genre}</Card.Text>
+                      <Card.Text><strong>Price:</strong> ${book.price}</Card.Text>
+                    </Card.Body></Card>
                   </Col>
-                ))}
-              </Row>
-            )}
+                ))}</Row>
+              )}
           </div>
 
-          {/* Publish Book */}
           <div className="border-top pt-4">
             <h2 className="h5 mb-3">Publish a New Book</h2>
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Title</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter book title"
-                  value={newBook.title}
-                  onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
-                />
+                <Form.Control type="text" placeholder="Enter book title" value={newBook.title} onChange={(e) => setNewBook({ ...newBook, title: e.target.value })} />
               </Form.Group>
-
               <Form.Group className="mb-3">
                 <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter book description"
-                  value={newBook.description}
-                  onChange={(e) => setNewBook({ ...newBook, description: e.target.value })}
-                />
+                <Form.Control as="textarea" rows={3} value={newBook.description} onChange={(e) => setNewBook({ ...newBook, description: e.target.value })} />
               </Form.Group>
-
               <Form.Group className="mb-3">
                 <Form.Label>Price</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="Enter book price"
-                  value={newBook.price}
-                  onChange={(e) => setNewBook({ ...newBook, price: parseFloat(e.target.value) })}
-                />
+                <Form.Control type="number" value={newBook.price} onChange={(e) => setNewBook({ ...newBook, price: parseFloat(e.target.value) })} />
               </Form.Group>
-
               <Form.Group className="mb-3">
                 <Form.Label>Genre</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={newBook.genre}
-                  onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })}
-                >
-                  {genres.map((genre, index) => (
-                    <option key={index} value={genre}>{genre}</option>
-                  ))}
+                <Form.Control as="select" value={newBook.genre} onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })}>
+                  {genres.map((genre, index) => <option key={index} value={genre}>{genre}</option>)}
                 </Form.Control>
               </Form.Group>
-
-              <Button variant="primary" onClick={handleAddBook} disabled={isLoading}>
-                {isLoading ? 'Publishing...' : 'Publish Book'}
-              </Button>
+              <Button variant="primary" onClick={handleAddBook} disabled={isLoading}>{isLoading ? 'Publishing...' : 'Publish Book'}</Button>
             </Form>
           </div>
         </div>
@@ -188,6 +124,7 @@ const AuthorDashboard: React.FC = () => {
 };
 
 export default AuthorDashboard;
+
 
 
 

@@ -137,11 +137,12 @@ const Home = () => {
       openAuthModal();
     } 
       const cartItem = {
+        id:book.id,
         description: book.description,
         bookName: book.title,
         price: book.price,
         imageUrl:book.imageUrl,
-        userName:  userName
+        userName:  userName,
       };
       addToCart(cartItem); 
   };

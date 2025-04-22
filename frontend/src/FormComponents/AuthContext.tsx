@@ -8,6 +8,7 @@ import {
 } from "react";
 
 interface User {
+  userName: string;
   email: string;
   role: string;
   name: string;
@@ -25,7 +26,7 @@ interface AuthContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>; // Add this line to define setUser
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

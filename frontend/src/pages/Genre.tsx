@@ -23,10 +23,15 @@ interface Book {
   bookId:number;
 }
 
-interface CartItem {
-  book: Book;
-  quantity: number;
+ interface CartItem {
+  id: number;
+  description: string;
+  bookName: string;
+  price: number;
+  imageUrl:string;
+  userName:  string | null;
 }
+
 
 const Genre = () => {
   const { genre } = useParams<{ genre: string }>();
@@ -95,18 +100,25 @@ const Genre = () => {
   };
 
 
-  const handleAddToCart=() =>{
-    if(!user){
-      toast.info("login to add to cart");
-      return
+  
+  const handleAddToCart = (book: Book) => {
+    if (!user) {
+      toast.info("Login to add to cart");
+      return;
     }
-
-    if(book){
-      addToCart(book);
-      toast.success(`${book.title} has been added to your cart!`);
-      
-    }
-  }
+  
+    addToCart({
+      id: book.id,
+      bookName: book.title,
+      description: book.description,
+      price: book.price,
+      imageUrl: book.imageUrl,
+      userName: user?.userName || "user",
+    });
+    
+    toast.success(`${book.title} has been added to your cart!`);
+  };
+  
   return (
     <div className="container py-5">
       <h2 className="text-center mb-5 fw-bold">
@@ -146,11 +158,14 @@ const Genre = () => {
                       setShowAuthModal(true);
                     } else {
                       addToCart({
-                        book, quantity: 1,
-                        id: 0,
-                        title: "",
-                        price: 0
+                        id: book.id,
+                        bookName: book.title,
+                        description: book.description,
+                        price: book.price,
+                        imageUrl: book.imageUrl,
+                        userName: user?.userName || "Guest",
                       });
+                      
                       toast(`Added ${book.title} to cart`);
                     }
                   }}

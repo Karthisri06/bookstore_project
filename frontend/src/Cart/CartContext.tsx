@@ -4,13 +4,6 @@ import { toast } from 'react-toastify';
 import { Book } from "../types";
 import { CartItem} from "../types";
 
-// type CartItem = {
-//   id: number;
-//   title: string;
-//   price: number;
-//   book:Book;
-
-// };
 
 type CartContextType = {
   cartItems: CartItem[];
@@ -23,7 +16,7 @@ type CartProviderProps = {
   children: ReactNode;
 };
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
