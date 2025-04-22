@@ -7,6 +7,8 @@ import { Review } from "./Review";
 @Entity()
 export class Book {
   rating: any;
+    purchases: any;
+    cartItems: any;
   static findOne(arg0: { where: { id: number; }; }) {
     throw new Error('Method not implemented.');
   }

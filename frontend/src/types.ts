@@ -19,6 +19,7 @@ export interface Book {
   publishedDate: string;
   pageCount: number;
   rating: number;
+  bookId:number;
 }
 
   

@@ -7,6 +7,7 @@ import { User } from "../src/entities/User";
 import ReviewController from './routes/review.routes';
 import cors from "cors";
 import dotenv from 'dotenv'
+import { CartController } from "./controllers/cart.controller";
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", ReviewController);
-app.use("/author",authRoute)
+app.use("/author",authRoutes);
+app.use("/cart", authRoutes );
 
 
 app.get("/test", (req, res) => {

@@ -10,6 +10,8 @@ export type UserRole = "admin" | "author" | "user";
 
 @Entity()
 export class User {
+  purchases: unknown;
+    cartItems: any;
   static findOne(arg0: { where: { id: number; }; }) {
     throw new Error('Method not implemented.');
   }

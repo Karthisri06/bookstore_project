@@ -1,60 +1,91 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { toast } from 'react-toastify';
+import React, { createContext, ReactNode, useContext, useState, useEffect } from "react";
+import axios from 'axios'; 
+import { toast } from 'react-toastify'; 
 import { Book } from "../types";
+import { CartItem} from "../types";
 
-type CartItem = {
-  id: string;
-  title: string;
-  price: number;
-  book: Book;
-  quantity: number;
-};
+// type CartItem = {
+//   id: number;
+//   title: string;
+//   price: number;
+//   book:Book;
+
+// };
 
 type CartContextType = {
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
+  removeFromCart: (id: number) => void;
   clearCart: () => void;
 };
 
-const CartContext = createContext<CartContextType>({} as CartContextType);
+type CartProviderProps = {
+  children: ReactNode;
+};
 
-export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+};
+
+export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // Load cart from localStorage on mount
+ 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
+    const fetchCartItems = async () => {
+      try {
+        const userId = 1; 
+        const response = await axios.get(`http://localhost:5000/cart/${userId}`);
+        setCartItems(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch cart items");
+      }
+    };
+
+    fetchCartItems();
   }, []);
 
-  // Add item to the cart
-  const addToCart = (item: CartItem) => {
-    setCartItems((prev) => {
-      const updatedCart = [...prev, item];
-      localStorage.setItem("cart", JSON.stringify(updatedCart)); // Save to localStorage
-      return updatedCart;
-    });
-    toast.success(`${item.title} added to cart!`);
+  const addToCart = async (item: CartItem) => {
+    try {
+      const userId = 1;
+      await axios.post(`http://localhost:5000/cart`, {
+        userId,
+        bookId: item.id,
+        quantity: 1, 
+      });
+      setCartItems((prevItems) => [...prevItems, item]);
+      toast.success("Item added to cart");
+    } catch (error) {
+      toast.error("Failed to add item to cart");
+    }
   };
 
-  // Remove item from the cart
-  const removeFromCart = (id: string) => {
-    setCartItems((prev) => {
-      const updatedCart = prev.filter((item) => item.id !== id);
-      localStorage.setItem("cart", JSON.stringify(updatedCart)); // Save updated cart
-      return updatedCart;
-    });
-    toast.error('Item removed from cart');
+  const removeFromCart = async (id: number) => {
+    try {
+      const userId = 1; 
+      await axios.delete(`http://localhost:5000/cart/${id}`);
+      setCartItems((prevItems) => prevItems.filter(item => item.id !== id));
+      toast.success("Item removed from cart");
+    } catch (error) {
+      toast.error("Failed to remove item from cart");
+    }
   };
 
-  // Clear the cart
-  const clearCart = () => {
-    setCartItems([]);
-    localStorage.removeItem("cart"); // Remove from localStorage
-    toast.info('Cart cleared!');
+  const clearCart = async () => {
+    try {
+      const userId = 1; 
+      await axios.delete(`http://localhost:5000/cart/${userId}`);
+      setCartItems([]);
+      toast.success("Cart cleared");
+    } catch (error) {
+      toast.error("Failed to clear cart");
+    }
   };
 
   return (
@@ -63,6 +94,3 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     </CartContext.Provider>
   );
 };
-
-export const useCart = () => useContext(CartContext);
-

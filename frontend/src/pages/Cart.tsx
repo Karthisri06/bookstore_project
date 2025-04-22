@@ -11,8 +11,13 @@ const Cart = () => {
     clearCart(); 
   };
 
+  const handleBuyNow = (itemTitle: string) => {
+    toast(`Buying "${itemTitle}"...`);
+    // You can later redirect to a payment page or trigger a modal
+  };
+
   return (
-    <div>
+    <div className="container mt-4">
       <h1>Cart</h1>
       {cartItems.length === 0 ? (
         <p>Your cart is empty</p>
@@ -26,13 +31,25 @@ const Cart = () => {
             </tr>
           </thead>
           <tbody>
-            {cartItems.map((item) => (
+            {cartItems
+            .filter(item => item.title&& item.price)
+            .map((item) => (
               <tr key={item.id}>
                 <td>{item.title}</td>
-                <td>${item.price}</td>
+                <td>₹{item.price}</td>
                 <td>
-                  <Button variant="danger" onClick={() => removeFromCart(item.id)}>
+                  <Button
+                    variant="danger"
+                    onClick={() => removeFromCart(item.id)}
+                    className="me-2"
+                  >
                     Remove
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => handleBuyNow(item.title)}
+                  >
+                    Buy Now
                   </Button>
                 </td>
               </tr>
@@ -40,10 +57,13 @@ const Cart = () => {
           </tbody>
         </Table>
       )}
-      <Button variant="success" onClick={handleCheckout}>Proceed to Checkout</Button>
+      {cartItems.length > 0 && (
+        <Button variant="success" onClick={handleCheckout}>
+          Proceed to Checkout
+        </Button>
+      )}
     </div>
   );
 };
 
 export default Cart;
-

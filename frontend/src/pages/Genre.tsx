@@ -1,21 +1,31 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import AuthModal from "../pages/Authmodal"; 
+import AuthModal from "../pages/Authmodal";
 import { useAuth } from "../services/AuthContext";
 import { useCart } from "../services/CartContext";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
 
 
+
 interface Book {
   id: number;
   title: string;
   authors: string;
-  imageUrl?: string;
-  genre: string;
+  description: string;
   price: number;
+  imageUrl: string;
+  genre: string;
+  publishedDate: string;
+  pageCount: number;
   rating: number;
+  bookId:number;
+}
+
+interface CartItem {
+  book: Book;
+  quantity: number;
 }
 
 const Genre = () => {
@@ -23,8 +33,8 @@ const Genre = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
-  useAuth();  
+
+  const { user, setUser } = useAuth(); 
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
@@ -45,20 +55,18 @@ const Genre = () => {
     }
   }, [genre]);
 
-
   const handleSignup = async (email: string, password: string) => {
     try {
       const res = await axios.post("http://localhost:5000/auth/register", {
         email,
         password,
       });
-      toast("Signup successful:", res.data);
+      toast("Signup successful");
     } catch (error) {
       console.error("Signup failed:", error);
       throw new Error("Signup failed. Try a different email.");
     }
   };
-
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -68,28 +76,35 @@ const Genre = () => {
       });
 
       const data = res.data;
-      
+
       if (!data || !data.token || !data.user) {
         throw new Error("Invalid login response");
       }
-      console.log("Login successful", data);
-      
-      localStorage.setItem("token", res.data.token);
-      setShowAuthModal(false);
-      localStorage.setItem('user', JSON.stringify(data.user));
 
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user); 
-  
-      handleClose();
+      setShowAuthModal(false);
+      toast("Login successful");
     } catch (error) {
-
-
       console.error("Login failed:", error);
       throw new Error("Login failed. Please check your credentials.");
     }
   };
 
 
+  // const handleAddToCart=() =>{
+  //   if(!user){
+  //     toast.info("login to add to cart");
+  //     return
+  //   }
+
+  //   if(book){
+  //     addToCart(book);
+  //     toast.success(`${book.title} has been added to your cart!`);
+      
+  //   }
+  // }
   return (
     <div className="container py-5">
       <h2 className="text-center mb-5 fw-bold">
@@ -122,19 +137,24 @@ const Genre = () => {
               </div>
 
               <div className="d-flex flex-column gap-2 mt-auto">
-              <button
-  className="btn btn-sm btn-outline-primary"
-  onClick={() => {
-    if (!isLoggedIn) {
-      setShowAuthModal(true);
-    } else {
-      // addToCart(book,1);  
-      toast(`Added ${book.title} to cart`);
-    }
-  }}
->
-  Add to Cart
-</button>
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      setShowAuthModal(true);
+                    } else {
+                      addToCart({
+                        book, quantity: 1,
+                        id: 0,
+                        title: "",
+                        price: 0
+                      });
+                      toast(`Added ${book.title} to cart`);
+                    }
+                  }}
+                >
+                  Add to Cart
+                </button>
 
                 <button
                   className="btn btn-sm btn-success"
@@ -143,6 +163,7 @@ const Genre = () => {
                       setShowAuthModal(true);
                     } else {
                       toast(`Bought ${book.title}`);
+                      // Later: redirect to order/payment page here
                     }
                   }}
                 >
@@ -177,12 +198,3 @@ const Genre = () => {
 };
 
 export default Genre;
-
-function setUser(user: any) {
-  throw new Error("Function not implemented.");
-}
-
-function handleClose() {
-  throw new Error("Function not implemented.");
-}
-

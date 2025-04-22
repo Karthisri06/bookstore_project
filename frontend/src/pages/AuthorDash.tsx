@@ -9,6 +9,7 @@ interface Book {
   description: string;
   genre: string;
   price: number;
+  
 }
 
 const AuthorDashboard: React.FC = () => {
@@ -25,29 +26,14 @@ const AuthorDashboard: React.FC = () => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const genres = [   
-    "fiction",
-    "romance",
-    "science",
-    "fantasy",
-    "mystery",
-    "biography",
-    "history",
-    "art",
-    "self-help",
-    "children",
-    "poetry",
-    "horror",
-    "adventure",
-    "comics",
-    "travel"];
+  const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Romance', 'Sci-Fi'];
 
   const fetchBooks = async () => {
     setIsFetching(true);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/author');
+        navigate('/');
         return;
       }
       const res = await axios.get('http://localhost:5000/author/my-books', {
@@ -55,10 +41,11 @@ const AuthorDashboard: React.FC = () => {
       });
       setBooks(res.data);
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.error('Axios error response:', err.response);
+        console.error('Status:', err.response?.status);
+      }
       setError('Error fetching books');
-      console.error('Error fetching books:', err);
-    } finally {
-      setIsFetching(false);
     }
   };
 
@@ -73,7 +60,7 @@ const AuthorDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/author');
+        navigate('/');
         return;
       }
 

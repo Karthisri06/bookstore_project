@@ -4,6 +4,9 @@ import axios from "axios";
 import { Card, Button, Spinner, Form, ListGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAuth } from "../services/AuthContext";
+import { useCart } from "../services/CartContext"; // Import useCart hook
+import { CartItem } from "../types";
+import { Book } from "../types";
 
 interface Review {
   book: string;
@@ -12,23 +15,14 @@ interface Review {
   rating: number;
 }
 
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  description: string;
-  rating: number;
-  imageUrl: string;
-  genre: string;
-  reviews: Review[];
-}
-
 interface ReviewData {
   id: number;
   comment: string;
   rating: number;
   user: string;
 }
+
+
 
 const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,22 +35,28 @@ const BookDetails = () => {
     book: "",
   });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
-
   const [reviewAdded, setReviewAdded] = useState(false);
+  const { user } = useAuth();
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/books/${id}`)
-      .then((res) => {
+    const fetchBook = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/books/${id}`);
         setBook(res.data);
-        setLoading(false);
         setNewReview((prev) => ({ ...prev, book: res.data.title }));
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching book:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
 
+    fetchBook();
+  }, [id]);
+// console.log(book, "book in cart");
+
+  useEffect(() => {
     if (book?.title) {
       axios
         .get(`http://localhost:5000/reviews/book/${book.title}`)
@@ -67,45 +67,81 @@ const BookDetails = () => {
           console.error("Error fetching reviews:", err);
         });
     }
-  }, [id, book?.title]);
+  }, [book?.title]);
 
   const handleReviewChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setNewReview((prevReview) => ({
       ...prevReview,
-      [name]: value,
+      [name]: name === "rating" ? parseInt(value) : value,
     }));
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log("hi", newReview);
       const token = localStorage.getItem("token");
-      console.log(token, "token");
+      if (!token) {
+        toast.error("You need to be logged in to post a review.");
+        return;
+      }
+
       await axios.post(`http://localhost:5000/reviews`, newReview, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      window.location.reload();
-      setReviewAdded(true);
 
-      // const updatedBook = await axios.get(`http://localhost:5000/reviews/book/${id}`);
-      // setBook(updatedBook.data);
+      toast.success("Review submitted!");
+      setReviewAdded(true);
+      setNewReview({
+        user: "",
+        comment: "",
+        rating: 5,
+        book: book?.title || "",
+      });
+
+      // Refresh reviews
+      const updatedReviews = await axios.get(
+        `http://localhost:5000/reviews/book/${book?.title}`
+      );
+      setReviews(updatedReviews.data);
     } catch (error) {
       console.error("Error adding review:", error);
+      toast.error("Something went wrong.");
     }
   };
-
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.info("Login to add to cart.");
+      return;
+    }
+  
+    if (book && book.id && book.title && book.price) {
+      const cartItem: CartItem = {
+        id: book.id,
+        title: book.title,
+        price: book.price,
+        quantity: 1,
+        book: book,
+      };
+      addToCart(cartItem);
+      toast.success(`${book.title} added to cart!`);
+    } else {
+      toast.error("Failed to add book to cart.");
+    }
+  };
+  
+  
   if (loading)
     return (
       <div className="text-center mt-5">
         <Spinner animation="border" />
       </div>
     );
+
   if (!book)
     return <p className="text-danger text-center mt-4">Book not found</p>;
 
@@ -122,7 +158,7 @@ const BookDetails = () => {
                 <strong>Title:</strong> {book.title}
               </Card.Title>
               <Card.Subtitle className="mb-2 text-muted">
-                <strong>Author:</strong> {book.author}
+                <strong>Author:</strong> {book.authors}
               </Card.Subtitle>
               <Card.Text>
                 <strong>Description:</strong> {book.description}
@@ -135,10 +171,12 @@ const BookDetails = () => {
               </Card.Text>
 
               <div className="d-grid gap-2 d-md-block mt-3">
-                <Button variant="primary" className="me-2">
+                <Button variant="primary" className="me-2" onClick={handleAddToCart}>
                   Add to Cart
                 </Button>
-                <Button variant="success">Buy Now</Button>
+                <Button variant="success">
+                  Buy Now
+                </Button>
               </div>
             </Card.Body>
           </div>
@@ -146,7 +184,6 @@ const BookDetails = () => {
       </Card>
 
       <h4 className="mt-5">User Reviews:</h4>
-
       {reviews.length === 0 ? (
         <p className="text-muted">No reviews yet. Be the first to review!</p>
       ) : (
@@ -166,7 +203,6 @@ const BookDetails = () => {
         </ListGroup>
       )}
 
-      {/* Review Form */}
       <h4 className="mt-5">Add Your Review:</h4>
       <Form onSubmit={handleSubmitReview}>
         <Form.Group className="mb-3">
@@ -176,22 +212,10 @@ const BookDetails = () => {
             name="user"
             value={newReview.user}
             onChange={handleReviewChange}
-            placeholder="Enter your username"
+            placeholder="Enter your name"
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Book Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="book"
-            value={newReview.book}
-            onChange={handleReviewChange}
-            placeholder="Enter book name"
-            required
-          />
-        </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Comment</Form.Label>
           <Form.Control
@@ -207,8 +231,7 @@ const BookDetails = () => {
 
         <Form.Group className="mb-3">
           <Form.Label>Rating</Form.Label>
-          <Form.Control
-            as="select"
+          <Form.Select
             name="rating"
             value={newReview.rating}
             onChange={handleReviewChange}
@@ -219,7 +242,7 @@ const BookDetails = () => {
                 {rating} Stars
               </option>
             ))}
-          </Form.Control>
+          </Form.Select>
         </Form.Group>
 
         <Button variant="primary" type="submit">
@@ -227,7 +250,6 @@ const BookDetails = () => {
         </Button>
       </Form>
 
-      {/* Show success message */}
       {reviewAdded && (
         <div className="alert alert-success mt-4">
           Your review has been added!
@@ -237,29 +259,5 @@ const BookDetails = () => {
   );
 };
 
-const BuyNowButton = ({ bookId }: { bookId: number }) => {
-  const { user } = useAuth();
-
-  const handleBuy = () => {
-    if (!user || user.role !== "user") {
-      toast.error("Please login as a user to purchase.");
-      return;
-    }
-
-    // Simulate purchase
-    toast.success("Purchase successful!");
-  };
-
-  return (
-    <button
-      className="bg-blue-600 text-white px-4 py-2 rounded"
-      onClick={handleBuy}
-    >
-      Buy Now
-    </button>
-  );
-};
-
 export default BookDetails;
-
 

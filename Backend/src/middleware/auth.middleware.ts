@@ -14,14 +14,15 @@ export const authenticate = (
   next: NextFunction
 ): void => {
   const authHeader = req.headers.authorization;
-
+   console.log("=========>",authHeader)
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ message: "Unauthorized: No token provided" });
+   res.status(401).json({ message: "Unauthorized: No token provided" });
     return;
   }
 
   try {
     const token = authHeader.split(" ")[1];
+    console.log('---------->',token)
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: number;
       role: string;
@@ -29,21 +30,8 @@ export const authenticate = (
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
-    return;
+    console.error(' Token verification failed:', err);
+   res.status(403).json({ message: "Invalid token" });
+   return
   }
 };
-
-
-export const isAdmin = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): void => {
-  if (req.user?.role !== 'admin') {
-    res.status(403).json({ message: "Forbidden: Admin access only" });
-    return
-  }
-  next();
-};
-

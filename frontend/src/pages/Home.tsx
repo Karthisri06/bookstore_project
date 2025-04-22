@@ -19,6 +19,8 @@ const Home = () => {
   const [genres, setGenres] = useState<string[]>([]);
   const [maybeLater, setMaybeLater] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { cartItems } = useCart();
+
 
   // Fetch books and genres on component mount
   useEffect(() => {
@@ -124,16 +126,19 @@ const Home = () => {
 
   const handleAddToCart = (book: Book) => {
     if (!isAuthenticated && !maybeLater) {
-      openAuthModal(); 
+      openAuthModal();
     } else {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const newCart = [...cart, book];  // Add the book directly to cart
+      const cartItem = {
+        id: book.id,
+        title: book.title,
+        price: book.price,
+        book,
+      };
   
-      localStorage.setItem("cart", JSON.stringify(newCart));
-  
-      toast.success(`${book.title} has been added to your cart!`);
+      addToCart(cartItem); 
     }
   };
+  
   
 
   // Handle buying book now

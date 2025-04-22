@@ -22,15 +22,15 @@ interface AuthContextType {
   setIsLoggedIn: (value: boolean) => void;
   openAuthModal: () => void;
   closeAuthModal: () => void;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Add this line to define setUser
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null); // Declare setUser here
   const [showModal, setShowModal] = useState(false);
-
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,14 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(true);
     setUser(userData);
     closeAuthModal();
-    // window.location.reload();
+    // window.location.reload(); // If you want to reload after login
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsAuthenticated(false);
-    setUser(null);
+    setUser(null); // Now setUser is properly defined
   };
 
   const openAuthModal = () => setShowModal(true);
@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoggedIn: setIsAuthenticated,
       openAuthModal,
       closeAuthModal,
+      setUser, // Include setUser in the context value
     }),
     [isAuthenticated, user, showModal]
   );
@@ -90,6 +91,7 @@ export const useAuth = () => {
   }
   return context;
 };
+
 
 
 
