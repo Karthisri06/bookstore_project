@@ -7,7 +7,7 @@ type AuthModalProps ={
   show: boolean;
   handleClose: () => void;
   handleLogin: (email: string, password: string) => Promise<void>;
-  handleSignup: (email: string, password: string) => Promise<void>;
+  handleSignup: (userName: string,email: string, password: string) => Promise<void>;
   onMaybeLater: () => void;
 
 }
@@ -21,6 +21,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setName] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); 
   const [loading, setLoading] = useState(false); 
 
@@ -34,7 +35,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
         await handleLogin(email, password);  
         handleClose(); 
       }else {
-        await handleSignup(email, password); 
+        console.log(username, 'name');
+        await handleSignup(email, password, username); 
         setIsLogin(true); 
       }
     } catch (error) {
@@ -59,6 +61,16 @@ const AuthModal: React.FC<AuthModalProps> = ({
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>} 
         
         <Form onSubmit={handleSubmit}>
+        {!isLogin && (<Form.Group className="mb-3">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              type="text"
+
+              required
+              value={username}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Form.Group>)}
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -78,6 +90,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
+          
 
           <Button variant="primary" type="submit" disabled={loading}>
             {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}

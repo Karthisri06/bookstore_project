@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../services/AuthContext';
+import { useAuth } from '../FormComponents/AuthContext';
 
 const AdminDash = () => {
   const { isAuthenticated, user } = useAuth();

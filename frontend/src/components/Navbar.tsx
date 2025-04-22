@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
 import axios from "axios";
-import { useAuth } from "../services/AuthContext";
-import { useCart } from '../services/CartContext';
+import { useAuth } from "../FormComponents/AuthContext";
+import { useCart } from '../Cart/CartContext';
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");

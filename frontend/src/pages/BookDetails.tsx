@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Button, Spinner, Form, ListGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { useAuth } from "../services/AuthContext";
-import { useCart } from "../services/CartContext"; // Import useCart hook
+import { useAuth } from "../FormComponents/AuthContext";
+import { useCart } from "../Cart/CartContext"; // Import useCart hook
 import { CartItem } from "../types";
 import { Book } from "../types";
 

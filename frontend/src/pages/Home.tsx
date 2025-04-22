@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../services/AuthContext"; 
+import { useAuth } from "../FormComponents/AuthContext"; 
 import { Book, CartItem } from "../types";
-import { loginUser, signupUser } from "../services/authService";
-import AuthModal from "./Authmodal";
+import { loginUser, signupUser } from "../FormComponents/authService";
+import AuthModal from "../FormComponents/Authmodal";
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
-import { useCart } from "../services/CartContext"; 
+import { useCart } from "../Cart/CartContext"; 
 import { ToastContainer } from "react-toastify"; 
 
 const Home = () => {
@@ -19,6 +19,7 @@ const Home = () => {
   const [genres, setGenres] = useState<string[]>([]);
   const [maybeLater, setMaybeLater] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [userName, setUserName] = useState<string | null>(null);
   const { cartItems } = useCart();
 
 
@@ -28,7 +29,11 @@ const Home = () => {
     if (token) {
       setIsLoggedIn(true);
     }
-
+    const username = localStorage.getItem('userName')
+    if(username){
+    setUserName(username)
+    }
+    
     const maybeLaterFlag = localStorage.getItem("maybeLater");
     if (maybeLaterFlag === "true") {
       setMaybeLater(true);
@@ -39,8 +44,11 @@ const Home = () => {
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await loginUser(email, password);
-      localStorage.setItem("token", response.token);
+      localStorage.setItem("token", JSON.stringify(response.token));
+      localStorage.setItem('user', JSON.stringify(response))
+      localStorage.setItem('userName', JSON.stringify(response.user.userName))
       localStorage.removeItem("maybeLater");
+      console.log(JSON.stringify(response.user.userName), 'resname')
       setIsLoggedIn(true);
       setMaybeLater(false);
       closeAuthModal();
@@ -55,7 +63,7 @@ const Home = () => {
       }
   
       window.location.reload();
-      console.log("Login successful");
+      console.log("Login successful test");
       toast("Login succes!");
     } catch (error) {
       console.error("Login failed:", error);
@@ -64,9 +72,9 @@ const Home = () => {
   };
 
   // Handle signup functionality
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string,userName:string) => {
     try {
-      const response = await signupUser(email, password);
+      const response = await signupUser(email, password, userName);
       localStorage.setItem("token", response.data.token);
       localStorage.removeItem("maybeLater");
       setIsLoggedIn(true);
@@ -127,16 +135,15 @@ const Home = () => {
   const handleAddToCart = (book: Book) => {
     if (!isAuthenticated && !maybeLater) {
       openAuthModal();
-    } else {
+    } 
       const cartItem = {
-        id: book.id,
-        title: book.title,
+        description: book.description,
+        bookName: book.title,
         price: book.price,
-        book,
+        imageUrl:book.imageUrl,
+        userName:  userName
       };
-  
       addToCart(cartItem); 
-    }
   };
   
   
@@ -280,8 +287,6 @@ const Home = () => {
 };
 
 export default Home;
-
-
 
 
 

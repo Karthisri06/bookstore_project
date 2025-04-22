@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import AuthModal from "../pages/Authmodal";
-import { useAuth } from "../services/AuthContext";
-import { useCart } from "../services/CartContext";
+import AuthModal from "../FormComponents/Authmodal";
+import { useAuth } from "../FormComponents/AuthContext";
+import { useCart } from "../Cart/CartContext";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
 
@@ -55,11 +55,12 @@ const Genre = () => {
     }
   }, [genre]);
 
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string,userName:string) => {
     try {
       const res = await axios.post("http://localhost:5000/auth/register", {
         email,
         password,
+        userName
       });
       toast("Signup successful");
     } catch (error) {
@@ -80,9 +81,10 @@ const Genre = () => {
       if (!data || !data.token || !data.user) {
         throw new Error("Invalid login response");
       }
-
+  console.log('data', data)
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem('userName', JSON.stringify(data.user.userName))
       setUser(data.user); 
       setShowAuthModal(false);
       toast("Login successful");
@@ -93,18 +95,18 @@ const Genre = () => {
   };
 
 
-  // const handleAddToCart=() =>{
-  //   if(!user){
-  //     toast.info("login to add to cart");
-  //     return
-  //   }
+  const handleAddToCart=() =>{
+    if(!user){
+      toast.info("login to add to cart");
+      return
+    }
 
-  //   if(book){
-  //     addToCart(book);
-  //     toast.success(`${book.title} has been added to your cart!`);
+    if(book){
+      addToCart(book);
+      toast.success(`${book.title} has been added to your cart!`);
       
-  //   }
-  // }
+    }
+  }
   return (
     <div className="container py-5">
       <h2 className="text-center mb-5 fw-bold">

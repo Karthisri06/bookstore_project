@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Routes, Route} from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Cart from "./pages/Cart";
+import Cart from "./Cart/Cart";
 import Navbar from "./components/Navbar";
-import { useAuth } from "./services/AuthContext";
-import AuthModal from "./pages/Authmodal";
-import { loginUser, signupUser } from "./services/authService";
+import { useAuth } from "./FormComponents/AuthContext";
+import AuthModal from "./FormComponents/Authmodal";
+import { loginUser, signupUser } from "./FormComponents/authService";
 import AdminDash from "./pages/AdminDash";
 import AuthDash from "./pages/AuthorDash";
 import Genre from "./pages/Genre";
@@ -16,7 +16,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import UnassignedBooksAssign from "./pages/unassingedBooks";
 import PrivateRoute from "./components/PrivateRoutes";
 
 
@@ -42,6 +41,10 @@ const App: React.FC = () => {
     try {
       console.log("Attempting login...");
       const res = await loginUser(email, password);
+      console.log(res)
+      localStorage.setItem('user', JSON.stringify(res))
+      localStorage.setItem('userName', JSON.stringify(res.user.userName))
+      console.log(res, 'res')
       console.log("Login success:", res.data.token); 
   
       if (!res || !res.data) {
@@ -83,9 +86,9 @@ const App: React.FC = () => {
     }
   };
   
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string, userName:string) => {
     try {
-      const res = await signupUser(email, password);
+      const res = await signupUser(email, password,userName);
       console.log("Full response object:",res);
       // console.log("SignUp success:",res.data);
       toast(res.data.message || "Signup successful! Please login.");
@@ -117,7 +120,6 @@ const App: React.FC = () => {
     <Route path="/cart" element={<PrivateRoute element={<Cart />} />} />
 
     <Route path="/admin" element={<PrivateRoute element={<AdminDash />} isAdmin />} />
-    <Route path="/admin/unassigned" element={<PrivateRoute element={<UnassignedBooksAssign />} isAdmin />} />
 
     <Route path="/author" element={<PrivateRoute element={<AuthDash />} isAuthor />} />
 

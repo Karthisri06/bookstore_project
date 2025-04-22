@@ -9,29 +9,32 @@ const userRepo = AppDataSource.getRepository(User);
 const bookRepo = AppDataSource.getRepository(Book);
 
 export const CartService = {
-  addToCart: async (userId: number, bookId: number, quantity: number) => {
-    const user = await userRepo.findOneBy({ id: userId });
-    const book = await bookRepo.findOneBy({ id: bookId });
+  addToCart: async (data: {  bookName: string; description: string; imageUrl: string, price:string, userName:string}) => {
+    // const user = await userRepo.findOneBy({ id: userId });
+    // const book = await bookRepo.findOneBy({ id: bookId });
 
-    if (!user || !book) throw new Error("User or Book not found");
+    if (!data.bookName || !data.userName) throw new Error("User or Book not found");
 
     const cartItem = new Cart();
-    cartItem.user = user;
-    cartItem.book = book;
-    cartItem.quantity = quantity;
+    cartItem.bookName = data.bookName;
+    cartItem.description = data.description;
+    cartItem.imageUrl = data.imageUrl;
+    cartItem.price = data.price;
+    cartItem.userName = data.userName;
 
     return await cartRepo.save(cartItem);
   },
 
-  getUserCart: async (userId: number) => {
-    return await cartRepo.find({
-      where: { user: { id: userId } },
-      relations: ["book"],
-    });
+  getUserCart: async (userName: string) => {
+    console.log('username', userName);
+    const res  = await cartRepo.findOneBy({ userName });
+    console.log(res)
+        return res;
   },
+  
 
-  removeFromCart: async (itemId: number) => {
-    await cartRepo.delete(itemId);
+  removeFromCart: async (id: number) => {
+    await cartRepo.delete(id);
   }
 };
 

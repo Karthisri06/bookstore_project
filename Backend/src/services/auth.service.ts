@@ -8,7 +8,7 @@ const userRepository = AppDataSource.getRepository(User);
 
 export class AuthService {
 
-   async register(name: string, email: string, password: string, role: string) {
+   async register( email: string, password: string, userName: string) {
     const existingUser = await userRepository.findOne({ where: { email } });
     if (existingUser) {
       throw new Error('User already exists');
@@ -20,7 +20,7 @@ export class AuthService {
 
       email,
       password: hashedPassword,
-      role,
+      userName,
     });
 
     await userRepository.save(newUser);

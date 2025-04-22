@@ -5,9 +5,9 @@ import { CartService } from "../services/cart.service";
 export const CartController = {
  
   addToCart: async (req: Request, res: Response) => {
+    console.log('req', req.body)
     try {
-      const { userId, bookId, quantity } = req.body;
-      const cartItem = await CartService.addToCart(userId, bookId, quantity);
+      const cartItem = await CartService.addToCart(req.body);
       res.status(201).json(cartItem);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -16,9 +16,10 @@ export const CartController = {
 
 
   getUserCart: async (req: Request, res: Response) => {
+    console.log(req.params, 'test')
     try {
-      const userId = parseInt(req.params.userId);
-      const cartItems = await CartService.getUserCart(userId);
+      const id = req.params.userId;
+      const cartItems = await CartService.getUserCart(id);
       res.json(cartItems);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -26,8 +27,10 @@ export const CartController = {
   },
 
   removeFromCart: async (req: Request, res: Response) => {
+    console.log(req.params)
     try {
       const itemId = parseInt(req.params.itemId);
+      console.log(itemId, req.params)
       await CartService.removeFromCart(itemId);
       res.status(204).send();
     } catch (err: any) {

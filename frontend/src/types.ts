@@ -36,8 +36,9 @@ export interface Book {
 
 export interface CartItem {
   id: number;
-  title: string;
+  description: string;
+  bookName: string;
   price: number;
-  quantity: number;
-  book: Book;
+  imageUrl:string;
+  userName:  string | null;
 }

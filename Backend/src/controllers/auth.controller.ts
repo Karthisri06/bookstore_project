@@ -11,8 +11,8 @@ import { AuthRequest } from "../authrequest";
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const userRepo = AppDataSource.getRepository(User);
-  const { email, password } = req.body;
-
+  const { email, password, userName } = req.body;
+console.log(req.body)
   console.log("Register request body:", req.body);
 
   try {
@@ -25,6 +25,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 
     const newUser = new User();
+    newUser.userName= userName,
     newUser.email = email;
     newUser.password = await bcrypt.hash(password, 10);
     newUser.role = "user";
@@ -38,7 +39,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       res.status(400).json({ message: "Validation failed", errors });
       return;
     }
-
+console.log(newUser, 'new user')
     await userRepo.save(newUser);
     console.log("User saved successfully!");
 
@@ -54,6 +55,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       token,
       user: {
         id: newUser.id,
+        name:newUser.userName,
         email: newUser.email,
         role: newUser.role,
       }
@@ -95,6 +97,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         process.env.JWT_SECRET!,
         { expiresIn: "7d" }
       );
+      console.log(user, 'user')
   
        res.status(200).json({
         message: "Login successful",
@@ -103,6 +106,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
           id: user.id,
           email: user.email,
           role: user.role,
+          userName: user.userName
         },
       });
     } catch (err) {

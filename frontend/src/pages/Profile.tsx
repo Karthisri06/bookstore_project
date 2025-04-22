@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../services/AuthContext";
+import { useAuth } from "../FormComponents/AuthContext";
 
 const Profile: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -12,7 +12,7 @@ const Profile: React.FC = () => {
     if (!isAuthenticated) {
       navigate("/");
     } else {
-      axios.get("/api/user/profile") // Replace with your actual API endpoint
+      axios.get("/auth/profile") 
         .then(response => setUser(response.data))
         .catch(error => console.error("Error fetching user data:", error));
     }

@@ -34,4 +34,7 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @Column()
+  userName:string;
 }
