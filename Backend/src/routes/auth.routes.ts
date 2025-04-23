@@ -4,6 +4,7 @@ import { authenticate } from "../middleware/auth.middleware";
 import { AppDataSource } from "../data-source";
 import { Book } from "../entities/Book";
 import { CartController } from "../controllers/cart.controller";
+import { getAuthorBooks, publishBook } from "../controllers/author.controller";
 
 const router = Router();
 
@@ -11,12 +12,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile",authenticate ,getProfile);
 //cart routes
-router.post("/", CartController.addToCart);
-router.get("/:userId", CartController.getUserCart);
-router.delete("/:itemId", CartController.removeFromCart);
 
-
-  
 
 export default router;
 

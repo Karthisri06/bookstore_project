@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import PrivateRoute from "./components/PrivateRoutes";
+import DashboardLayout from "./pages/DashboardLayout";
 
 
 
@@ -41,8 +42,8 @@ const App: React.FC = () => {
     try {
       console.log("Attempting login...");
       const res = await loginUser(email, password);
-      console.log(res)
-      localStorage.setItem('user', JSON.stringify(res))
+      console.log("------------>",res)
+      localStorage.setItem('user', JSON.stringify(res.data))
       localStorage.setItem('userName', JSON.stringify(res.user.userName))
       console.log(res, 'res')
       console.log("Login success:", res.data.token); 
@@ -126,6 +127,7 @@ const App: React.FC = () => {
 
     <Route path="/genre/:genre" element={<Genre />} />
     <Route path="/book/:id" element={<BookDetails />} />
+    <Route path="/dashboard" element={<PrivateRoute element={<DashboardLayout children={undefined}/>}/>}/>
   </Route>
 </Routes>
 

@@ -18,7 +18,6 @@ export class ReviewService {
       user: data.user, 
       book: data.book,  
     });
-  console.log(review, 'review');
   const Response = await reviewRepo.save(review)
     return Response;
   }

@@ -1,10 +1,6 @@
-
-import { Request, Response,Router } from "express";
-import { AppDataSource } from "../data-source"; 
-import { Book } from "../entities/Book"; 
-
-
-
+import { Request, Response, Router } from "express";
+import { AppDataSource } from "../data-source";
+import { Book } from "../entities/Book";
 
 const bookRepo = AppDataSource.getRepository(Book);
 
@@ -18,18 +14,30 @@ export const getBooks = async (req: Request, res: Response) => {
   }
 };
 
-export const getBookGenre = async (req: Request, res: Response) => {
+export const getBookGenre = async (req: Request, res: Response):Promise<void> => {
   try {
     const genre = req.params.genre;
-    const books = await bookRepo.find({ where: { genre } }); 
+
+    if (!genre) {
+   res.status(400).json({ message: "Genre is required" });
+   return 
+    }
+
+    const books = await bookRepo.find({ where: { genre } });
+
+    if (books.length === 0) {
+      res.status(404).json({ message: `No books found for genre: ${genre}` });
+      return
+    }
+
     res.json(books.map(book => ({
       id: book.id,
       title: book.title,
-      authors: book.authors,
+      author: book.author,
       imageUrl: book.imageUrl,
       genre: book.genre,
       price: book.price,         
-      rating: book.rating ,      
+      rating: book.rating,      
     })));
     
   } catch (err) {
@@ -38,18 +46,22 @@ export const getBookGenre = async (req: Request, res: Response) => {
   }
 };
 
-
-export const getBookById = async (req: Request, res: Response):Promise<void> => {
+export const getBookById = async (req: Request, res: Response): Promise<void> => {
   try {
     const bookId = parseInt(req.params.id);
 
-  console.log('id', bookId)
+   
+    if (isNaN(bookId)) {
+     res.status(400).json({ message: "Invalid book ID" });
+     return
+    }
+
     const book = await bookRepo.findOne({
       where: { id: bookId },
     });
 
     if (!book) {
-    res.status(404).json({ message: "Book not found" });
+      res.status(404).json({ message: "Book not found" });
       return 
     }
 

@@ -4,9 +4,12 @@ import { useAuth } from '../FormComponents/AuthContext';
 import profilePic from '../assets/profile.jpg';
 
 const ProfileButton: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useAuth(); // Accessing user from AuthContext
   const navigate = useNavigate();
   const location = useLocation();  // Hook to get current path
+
+    const userers = localStorage.getItem('userName') 
+    console.log('=======================>',userers)
 
   const handleRoute = (path: string) => {
     navigate(path);
@@ -53,10 +56,11 @@ const ProfileButton: React.FC = () => {
         }}
       />
       <ul className="dropdown-menu dropdown-menu-end mt-2">
+        
         {/* Display the user's name if available */}
-        {user?.name && (
+        {userers && (
           <li>
-            <span className="dropdown-item text-center">{`Hello, ${user.name}`}</span>
+            <span className="dropdown-item text-center">{`Hello, ${userers}`}</span>
           </li>
         )}
         <li>

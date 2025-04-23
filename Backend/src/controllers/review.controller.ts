@@ -4,7 +4,6 @@ import { Review } from '../entities/Review';
 
 export class ReviewController {
   async addReview(req: Request, res: Response) {
-    console.log(req.body)
     try {
       const review = await ReviewService.createReview({
         comment: req.body.comment,
@@ -29,7 +28,6 @@ export class ReviewController {
   }
 
   async updateReview(req: Request, res: Response) {
-    console.log(req.body, 'update')
     const { reviewId, content, rating } = req.body;
 
     const review = await Review.findOne({
@@ -48,7 +46,6 @@ export class ReviewController {
   }
 
   async deleteReview(req: Request, res: Response) {
-    console.log(req.body)
     const { reviewId } = req.body;
 
     const review = await Review.findOne({

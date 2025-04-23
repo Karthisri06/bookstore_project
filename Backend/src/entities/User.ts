@@ -1,40 +1,32 @@
-
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { IsEmail, IsNotEmpty, Length } from "class-validator";
-import { OneToMany } from "typeorm";
-import { Book } from "./Book";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { IsEmail, Length } from "class-validator";
 import { Review } from "./Review";
-
+import { Purchase } from "./Purchase";
 
 export type UserRole = "admin" | "author" | "user";
 
 @Entity()
 export class User {
-  purchases: unknown;
-    cartItems: any;
-  static findOne(arg0: { where: { id: number; }; }) {
-    throw new Error('Method not implemented.');
-  }
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  @IsEmail({},{message:"Email must be valid"})
+  @IsEmail()
   email: string;
 
   @Column()
-  @Length(6,100)
+  @Length(6, 100)
   password: string;
 
   @Column({ type: "enum", enum: ["admin", "author", "user"], default: "user" })
-  role: string;
+  role: UserRole;
 
-  @OneToMany(() => Book, (book) => book.authors)
-  books: Book[];
+  @Column()
+  userName: string;
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
 
-  @Column()
-  userName:string;
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchase: Purchase[];
 }

@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaShoppingCart, FaUserCircle, FaSearch } from "react-icons/fa";
-import axios from "axios";
+import { FaShoppingCart } from "react-icons/fa";
 import { useAuth } from "../FormComponents/AuthContext";
 import { useCart } from '../Cart/CartContext';
+import ProfileButton from "./ProfileButton";
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthenticated, openAuthModal, logout } = useAuth();
   const navigate = useNavigate();
   const { cartItems } = useCart();
-
   const [isLogin, setIsLogin] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-  
-
     if (token) {
       setIsLogin(true);
     }
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setIsLogin(false);
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
@@ -30,35 +32,20 @@ const Navbar: React.FC = () => {
           BookStore
         </Link>
 
-        <div className="d-flex align-items-center">
-          <Link to="/cart" className="btn btn-outline-primary me-2">
+        <div className="d-flex align-items-center gap-3">
+          <Link to="/cart" className="btn btn-outline-primary position-relative">
             <FaShoppingCart size={20} />
             {cartItems.length > 0 && (
-              <span className="badge bg-danger ms-1"></span>
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {cartItems.length}
+              </span>
             )}
           </Link>
 
           {isLogin ? (
             <>
-              {user && (
-                <Link
-                  to="/profile"
-                  className="btn btn-outline-secondary me-2 d-flex align-items-center"
-                >
-                  <FaUserCircle className="me-1" />
-                  {user?.name || user?.email}
-                </Link>
-              )}
-
-              <button
-                className="btn btn-outline-danger"
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                  setIsLogin(false);
-                  setUser(null);
-                }}
-              >
+              <ProfileButton />
+              <button className="btn btn-outline-danger" onClick={handleLogout}>
                 Logout
               </button>
             </>
@@ -74,6 +61,7 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
 
 
 

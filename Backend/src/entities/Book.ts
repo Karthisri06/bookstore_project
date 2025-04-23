@@ -1,48 +1,38 @@
-
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Review } from "./Review";
+import { Purchase } from "./Purchase";
 
 @Entity()
 export class Book {
-  rating: any;
-    purchases: any;
-    cartItems: any;
-  static findOne(arg0: { where: { id: number; }; }) {
-    throw new Error('Method not implemented.');
-  }
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   title: string;
 
-  @Column({type:"text",nullable:true})
+  @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   imageUrl: string;
 
   @Column()
-   genre: string;
-
+  genre: string;
 
   @Column({ default: true })
   isHotSelling: boolean;
 
-  @ManyToOne(() => User, (user) => user.books, { nullable: true })
-  author?: User;
-  
-  @Column({ nullable: true })
-  authors?: string;
-
   @Column({ type: "float", nullable: true })
   price: number;
+
+  @Column()
+  author: string;
 
   @OneToMany(() => Review, (review) => review.book)
   reviews: Review[];
 
+  @OneToMany(() => Purchase, (purchase) => purchase.book)
+  purchase: Purchase[];
+  rating: any;
 }
-
 

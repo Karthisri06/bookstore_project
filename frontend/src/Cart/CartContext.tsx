@@ -42,11 +42,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         const data = response.data;
         console.log(data, ' cart test');
   
-        // If data is an object, wrap it in an array
+     
         if (Array.isArray(data)) {
           setCartItems(data);
         } else if (data && typeof data === 'object') {
-          setCartItems([data]); // Wrap the single object in an array
+          setCartItems([data]);
         } else {
           setCartItems([]);
           console.error("Cart data is not in the expected format:", data);
@@ -62,7 +62,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const addToCart = async (item: CartItem) => {
     try {
-      const userId = 1;
+      const userName = 1;
       const res= await axios.post(`http://localhost:5000/cart`, item);
       console.log(res, 'card')
       setCartItems((prevItems) => [...prevItems, item]);

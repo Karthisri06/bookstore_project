@@ -5,7 +5,6 @@ import { CartService } from "../services/cart.service";
 export const CartController = {
  
   addToCart: async (req: Request, res: Response) => {
-    console.log('req', req.body)
     try {
       const cartItem = await CartService.addToCart(req.body);
       res.status(201).json(cartItem);
@@ -16,7 +15,6 @@ export const CartController = {
 
 
   getUserCart: async (req: Request, res: Response) => {
-    console.log(req.params, 'test')
     try {
       const id = req.params.userId;
       const cartItems = await CartService.getUserCart(id);
@@ -27,10 +25,8 @@ export const CartController = {
   },
 
   removeFromCart: async (req: Request, res: Response) => {
-    console.log(req.params)
     try {
       const itemId = parseInt(req.params.itemId);
-      console.log(itemId, req.params)
       await CartService.removeFromCart(itemId);
       res.status(204).send();
     } catch (err: any) {

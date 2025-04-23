@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
-
+    console.log('@@@@@@@@@@@@@@@',userData)
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
  console.log(userData, 'userData')
     localStorage.setItem("token", token);
     console.log(JSON.stringify(userData), 'user')
-    // localStorage.setItem('userName', JSON.stringify(userData.userName))
+    localStorage.setItem('userName', JSON.stringify(userData.userName))
     localStorage.setItem("user", JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);

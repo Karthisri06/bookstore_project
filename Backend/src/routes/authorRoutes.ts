@@ -5,8 +5,7 @@ import { authenticate } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
-router.post("/publish", authenticate, publishBook);
-router.get("/my-books", authenticate, getAuthorBooks);
+router.post("/publish/:author", authenticate, publishBook);
+router.get("/my-books/:author", authenticate, getAuthorBooks);
 
 export default router;
-

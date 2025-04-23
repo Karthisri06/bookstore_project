@@ -26,9 +26,7 @@ export const CartService = {
   },
 
   getUserCart: async (userName: string) => {
-    console.log('username', userName);
     const res  = await cartRepo.findOneBy({ userName });
-    console.log(res)
         return res;
   },
   

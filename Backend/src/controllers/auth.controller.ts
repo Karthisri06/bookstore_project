@@ -12,8 +12,6 @@ import { AuthRequest } from "../authrequest";
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const userRepo = AppDataSource.getRepository(User);
   const { email, password, userName } = req.body;
-console.log(req.body)
-  console.log("Register request body:", req.body);
 
   try {
     const existingUser = await userRepo.findOneBy({ email });
@@ -72,7 +70,6 @@ console.log(newUser, 'new user')
     const { email, password } = req.body;
   
     try {
-      console.log('test')
       const userRepo = AppDataSource.getRepository(User);
       const user = await userRepo.findOne({ where:{email} });
   
@@ -93,7 +90,7 @@ console.log(newUser, 'new user')
   
       // Create JWT token
       const token = jwt.sign(
-        { id: user.id, role: user.role },
+        { id: user.id, role: user.role , name: user.userName },
         process.env.JWT_SECRET!,
         { expiresIn: "7d" }
       );

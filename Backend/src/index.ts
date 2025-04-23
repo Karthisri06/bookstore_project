@@ -1,8 +1,9 @@
 import express from "express";
 import { AppDataSource } from "./data-source"; 
 import authRoutes from "./routes/auth.routes";
-import authRoute from "./routes/authorRoutes";
+import authorRoute from "./routes/authorRoutes";
 import bookRoutes from "./routes/book.routes";
+import cartRoutes from "./routes/cart.routes";
 import { User } from "../src/entities/User";
 import ReviewController from './routes/review.routes';
 import cors from "cors";
@@ -20,8 +21,8 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", ReviewController);
-app.use("/author",authRoutes);
-app.use("/cart", authRoutes );
+app.use("/author",authorRoute);
+app.use("/cart", cartRoutes );
 
 
 app.get("/test", (req, res) => {
@@ -41,9 +42,9 @@ AppDataSource.initialize()
   });
 
 
-  app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
-  });
+  // app.use((req, res) => {
+  //   res.status(404).json({ message: "Route not found" });
+  // });
 
 export default app;
 

@@ -35,4 +35,3 @@ export class Review extends BaseEntity {
   book: string;
 }
 
-  
