@@ -8,8 +8,8 @@ const Reviews = ({ bookId }: { bookId: string }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // Fetch reviews for the book
-    axios.get(`/api/reviews/${bookId}`)
+
+    axios.get(`/reviews/${bookId}`)
       .then((response) => {
         setReviews(response.data);
       })
@@ -19,11 +19,11 @@ const Reviews = ({ bookId }: { bookId: string }) => {
   }, [bookId]);
 
   const handleAddReview = () => {
-    // Add review logic
-    axios.post(`/api/reviews/${bookId}`, { text: reviewText })
+
+    axios.post(`/reviews/${bookId}`, { text: reviewText })
       .then((response) => {
         setReviews([...reviews, response.data]);
-        setReviewText(""); // Reset review input
+        setReviewText(""); 
       })
       .catch(() => {
         setErrorMessage("Error adding review.");
@@ -49,7 +49,6 @@ const Reviews = ({ bookId }: { bookId: string }) => {
         {reviews.map((review) => (
           <ListGroup.Item key={review.id}>
             {review.text}
-            {/* Edit/Delete buttons can go here */}
           </ListGroup.Item>
         ))}
       </ListGroup>
@@ -58,4 +57,3 @@ const Reviews = ({ bookId }: { bookId: string }) => {
 };
 
 export default Reviews;
-

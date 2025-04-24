@@ -4,6 +4,7 @@ import { Purchase } from "../entities/Purchase";
 import { User } from "../entities/User";
 import { Book } from "../entities/Book";
 import { AuthRequest } from "../middleware/auth.middleware"; 
+import { getRepository } from "typeorm";
 
 export const PurchaseController = {
   buyBook: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -76,4 +77,22 @@ export const PurchaseController = {
   }
 };
 
+
+
+export const getAllPurchases = async (req: Request, res: Response):Promise<void> => {
+  try {
+   
+    const purchases = await AppDataSource.getRepository(Purchase).find({
+      relations: ["user", "book"], 
+    });
+
+  
+    res.status(200).json(purchases);
+    return 
+  } catch (error) {
+    console.error("Error fetching purchases:", error);
+   res.status(500).json({ message: "Failed to fetch purchases" });
+   return
+  }
+};
 

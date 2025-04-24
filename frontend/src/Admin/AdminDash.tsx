@@ -1,106 +1,153 @@
-import { useState, useEffect } from 'react';
-import { Container, Card, Row, Col, Alert, Nav } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../FormComponents/AuthContext';
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  ColumnDef,
+} from '@tanstack/react-table';
+import { Container, Table, Button, Spinner } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 
-const AdminDash = () => {
-  const { isAuthenticated, user } = useAuth();
-  const navigate = useNavigate();
+interface User {
+  id: number;
+  name: string;
+}
 
-  const [books, setBooks] = useState([]);
-  const [error, setError] = useState("");
+interface Book {
+  id: number;
+  title: string;
+}
+
+interface Purchase {
+  id: number;
+  user?: User; 
+  book?: Book;
+  quantity: number;
+  address: string;
+  priceAtPurchase: number;
+  status: string;
+  purchasedAt: string;
+}
+
+const AllOrders = () => {
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") return;
+    const fetchPurchases = async () => {
+      try {
+        const response = await axios.get<Purchase[]>('http://localhost:5000/buy/allorder');
+        console.log('Fetched Purchases:', response.data); // ✅ Inspect your API structure
+        setPurchases(response.data);
+      } catch (error) {
+        console.error('Error fetching purchases:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPurchases();
+  }, []);
 
-    axios.get("http://localhost:5000/books")
-      .then(res => setBooks(res.data))
-      .catch(() => setError("Failed to load books."));
-  }, [isAuthenticated, user]);
+  const handleEdit = (id: number) => {
+    console.log(`Edit purchase with ID: ${id}`);
+   
+  };
 
-  useEffect(()=>{
-    const token = localStorage.getItem('token');
-    const fetchAllUser =async ()=>{
-   const data= await axios.get("http://localhost:5000/auth/alluser",{
-    headers: { Authorization: `Bearer ${token}` },
-    })
-    console.log(data.data, 'aertyujhgfhghg')
-  }
-    fetchAllUser()
-  })
-  const handleCardClick = (path: string) => navigate(path);
+  const handleDelete = (id: number) => {
+    console.log(`Delete purchase with ID: ${id}`);
+ 
+  };
+
+  const columns = React.useMemo<ColumnDef<Purchase, any>[]>(
+    () => [
+      {
+        header: 'User',
+        accessorFn: (row) => row.user?.name || 'N/A',
+      },
+      {
+        header: 'Book',
+        accessorFn: (row) => row.book?.title || 'N/A',
+      },
+      {
+        header: 'Quantity',
+        accessorKey: 'quantity',
+      },
+      {
+        header: 'Address',
+        accessorKey: 'address',
+      },
+      {
+        header: 'Price at Purchase',
+        accessorKey: 'priceAtPurchase',
+        cell: ({ getValue }) => `$${Number(getValue()).toFixed(2)}`,
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+      },
+      {
+        header: 'Purchased At',
+        accessorKey: 'purchasedAt',
+        cell: ({ getValue }) => new Date(getValue()).toLocaleString(),
+      },
+      {
+        header: 'Actions',
+        cell: ({ row }) => (
+          <div>
+            <Button variant="warning" onClick={() => handleEdit(row.original.id)}>Edit</Button>{' '}
+            <Button variant="danger" onClick={() => handleDelete(row.original.id)}>Delete</Button>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
+
+  const table = useReactTable({
+    data: purchases,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <Container fluid className="py-4 bg-light min-vh-100">
-      <Row>
-        {/* Sidebar */}
-        <Col md={3} className="bg-white shadow-sm p-4 rounded-start">
-          <h4 className="text-primary mb-4">Admin Panel</h4>
-          <Nav defaultActiveKey="/admin/dashboard" className="flex-column">
-            <Nav.Link className="mb-2" onClick={() => handleCardClick('/admin/dashboard')}>Dashboard</Nav.Link>
-            <Nav.Link className="mb-2" onClick={() => handleCardClick('/admin/orders')}>Orders</Nav.Link>
-            <Nav.Link className="mb-2" onClick={() => handleCardClick('/admin/notifications')}>Notifications</Nav.Link>
-            <Nav.Link className="mb-2" onClick={() => handleCardClick('/admin/users')}>Manage Users</Nav.Link>
-            <Nav.Link className="mb-2" onClick={() => handleCardClick('/admin/books')}>Manage Books</Nav.Link>
-          </Nav>
-        </Col>
-
-        {/* Main Content */}
-        <Col md={9} className="p-4">
-          <h2 className="fw-bold text-dark mb-4">Welcome back, Admin!</h2>
-          {error && <Alert variant="danger">{error}</Alert>}
-
-          <Row className="g-4">
-            <Col md={6} lg={4}>
-              <Card className="shadow-sm border-0" onClick={() => handleCardClick('/admin/users')} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <Card.Title className="text-primary">Manage Users</Card.Title>
-                  <Card.Text>Control user roles and permissions.</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={4}>
-              <Card className="shadow-sm border-0" onClick={() => handleCardClick('/admin/books')} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <Card.Title className="text-success">Manage Books</Card.Title>
-                  <Card.Text>Add, update or delete books.</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={4}>
-              <Card className="shadow-sm border-0" onClick={() => handleCardClick('/admin/orders')} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <Card.Title className="text-warning">Orders</Card.Title>
-                  <Card.Text>Track and manage orders.</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={4}>
-              <Card className="shadow-sm border-0" onClick={() => handleCardClick('/admin/notifications')} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <Card.Title className="text-danger">Notifications</Card.Title>
-                  <Card.Text>Send and review alerts.</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={4}>
-              <Card className="shadow-sm border-0" onClick={() => handleCardClick('/')} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <Card.Title className="text-secondary">Home</Card.Title>
-                  <Card.Text>Back to the bookstore homepage.</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+    <Container fluid className="py-4">
+      <h2>All Orders</h2>
+      {loading ? (
+        <div className="text-center py-5">
+          <Spinner animation="border" role="status" />
+          <div>Loading orders...</div>
+        </div>
+      ) : (
+        <Table striped bordered hover responsive>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </Container>
   );
 };
 
-export default AdminDash;
+export default AllOrders;

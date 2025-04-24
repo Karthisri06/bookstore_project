@@ -11,7 +11,7 @@ interface User {
   id: any;
   userName: string;
   email: string;
-  role: string;
+  role: string;  
   name: string;
 }
 
@@ -37,6 +37,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
+    console.log("userdata-----------------", userData);
+
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
@@ -49,22 +51,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (userData: User, token: string) => {
- console.log(userData, 'userData')
+    console.log(userData, "userData");
     localStorage.setItem("token", token);
-    console.log(JSON.stringify(userData), 'user')
-    localStorage.setItem('userName', JSON.stringify(userData.userName))
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData)); // Store complete user data
     setIsAuthenticated(true);
     setUser(userData);
     closeAuthModal();
-    // window.location.reload(); // If you want to reload after login
+    // window.location.reload(); // Optional, reload after login
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsAuthenticated(false);
-    setUser(null); // Now setUser is properly defined
+    setUser(null); 
   };
 
   const openAuthModal = () => setShowModal(true);
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoggedIn: setIsAuthenticated,
       openAuthModal,
       closeAuthModal,
-      setUser, // Include setUser in the context value
+      setUser, 
     }),
     [isAuthenticated, user, showModal]
   );
@@ -95,6 +95,7 @@ export const useAuth = () => {
   }
   return context;
 };
+
 
 
 

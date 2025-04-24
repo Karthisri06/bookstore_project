@@ -25,7 +25,7 @@ app.use("/reviews", ReviewController);
 app.use("/author",authorRoute);
 app.use("/cart", cartRoutes );
 app.use("/buy",buyRoutes)
-
+// http://localhost:5000/reviews/book/Lajja
 
 app.get("/test", (req, res) => {
 console.log("HI")

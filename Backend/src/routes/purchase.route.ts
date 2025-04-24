@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PurchaseController } from "../controllers/purchase.controller";
+import { getAllPurchases, PurchaseController } from "../controllers/purchase.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -11,6 +11,8 @@ router.get("/purchases", authenticate, PurchaseController.getMyPurchases);
 
 
 router.delete("/purchase/:purchaseId", authenticate, PurchaseController.deletePurchase);
+
+router.get("/allorder",getAllPurchases)
 
 export default router;
 

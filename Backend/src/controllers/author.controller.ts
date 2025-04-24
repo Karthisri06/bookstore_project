@@ -10,7 +10,6 @@ console.log(req, '123456789095423456789098765, ', req.params)
   try {
     const bookRepo = AppDataSource.getRepository(Book);
 
-    // Save author's name as a string in the Book entity
     const newBook = bookRepo.create({
       title:title,
       description:description,
@@ -32,7 +31,7 @@ console.log(req, '123456789095423456789098765, ', req.params)
 
 export const getAuthorBooks = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    console.log('req1111111111111111111111111', req.params.author)
+    console.log('req', req.params.author)
     const userRepo = AppDataSource.getRepository(User);
     const bookRepo = AppDataSource.getRepository(Book);
 
@@ -43,7 +42,6 @@ export const getAuthorBooks = async (req: AuthRequest, res: Response): Promise<v
     //   return;
     // }
 
-    // Query books using author's name as string
     const books = await bookRepo.find({ where: { author: req.params.author } });
 
     res.json(books);

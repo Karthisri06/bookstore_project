@@ -149,3 +149,53 @@ export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const editUser = async (req: Request, res: Response): Promise<void> => {
+  const userRepo = AppDataSource.getRepository(User);
+  const userId = Number(req.params.id);
+  const { userName, email, role } = req.body;
+
+  try {
+    const user = await userRepo.findOneBy({ id: userId });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    user.userName = userName || user.userName;
+    user.email = email || user.email;
+    user.role = role || user.role;
+
+    await userRepo.save(user);
+
+    res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+    console.error("Edit user error:", error);
+    // res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const userRepo = AppDataSource.getRepository(User);
+  const userId = Number(req.params.id);
+
+  try {
+    const user = await userRepo.findOneBy({ id: userId });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    await userRepo.remove(user);
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    // res.status(500).json({ message: "Server error" });
+  }
+};

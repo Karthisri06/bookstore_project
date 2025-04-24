@@ -20,6 +20,8 @@ import AuthorDashboard from "./Author/AuthorDash";
 import PurchaseForm from "./Purchase/purchase";
 import PurchasePage from './Purchase/PurchasePage';
 import ManageUsers from "./Admin/ManagaeUsers";
+import ManageBooks from "./Admin/ManageBooks";
+import AllOrders from "./Admin/AdminOrders";
 
 
 
@@ -136,6 +138,8 @@ const App: React.FC = () => {
 
    
     <Route path="/admin/users" element={<ManageUsers />} />
+    <Route path="/admin/books" element={<ManageBooks />} />
+    <Route path="/admin/orders" element={<AllOrders />} />
 
 
   </Route>
@@ -147,6 +151,15 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+
+
+
+
+
+
 
 
 

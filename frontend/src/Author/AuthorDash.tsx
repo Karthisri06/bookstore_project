@@ -95,7 +95,7 @@ const AuthorDashboard: React.FC = () => {
         <div className="col-md-3 bg-dark text-white p-4">
           <h2 className="h4">Author Dashboard</h2>
           <ul className="list-unstyled">
-            {['Home', 'My Books', 'Reviews', 'Notifications'].map((section) => (
+            {['Home', 'My Books'].map((section) => (
               <li key={section}>
                 <button
                   className={`btn btn-link text-white text-start w-100 ${activeSection === section ? 'fw-bold' : ''}`}
@@ -214,7 +214,7 @@ const AuthorDashboard: React.FC = () => {
             </>
           )}
 
-          {activeSection === 'Reviews' && (
+          {/* {activeSection === 'Reviews' && (
             <div>
               <h2>Reviews</h2>
               <p>Here you can manage and respond to book reviews.</p>
@@ -226,7 +226,7 @@ const AuthorDashboard: React.FC = () => {
               <h2>Notifications</h2>
               <p>Here you'll see notifications like review updates or book approvals.</p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

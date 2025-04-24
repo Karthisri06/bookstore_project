@@ -36,5 +36,8 @@ export class Review extends BaseEntity {
 
   @Column()
   userName: string;
+
+  @Column()
+  authorName: string;
 }
 

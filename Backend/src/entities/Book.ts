@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, FindOperator } from "typeorm";
 import { Review } from "./Review";
 import { Purchase } from "./Purchase";
 
 @Entity()
 export class Book {
+  static findOne(arg0: { where: { title: FindOperator<string>; }; }) {
+    throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn()
   id: number;
 

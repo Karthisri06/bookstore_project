@@ -11,4 +11,6 @@ router.get('/book/:title', controller.getReviewsForBook);
 router.put('/', authenticate, controller.updateReview);
 router.delete('/', authenticate, controller.deleteReview);
 
+// router.get('/:title',controller.getReviewsByBookTitle)
+
 export default router;

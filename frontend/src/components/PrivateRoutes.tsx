@@ -24,6 +24,7 @@ const PrivateRoute: React.FC<Props> = ({ element, isAdmin, isAuthor }) => {
     return <Navigate to="/author" />;
   }
 
+  
   return element;
 };
 
