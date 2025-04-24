@@ -13,7 +13,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile",authenticate ,getProfile);
 router.get("/alluser",authenticate,getAllUsers)
-//cart routes
+
 
 
 

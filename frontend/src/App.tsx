@@ -19,6 +19,7 @@ import DashboardLayout from "./pages/DashboardLayout";
 import AuthorDashboard from "./Author/AuthorDash";
 import PurchaseForm from "./Purchase/purchase";
 import PurchasePage from './Purchase/PurchasePage';
+import ManageUsers from "./Admin/ManagaeUsers";
 
 
 
@@ -134,6 +135,8 @@ const App: React.FC = () => {
     <Route path="/purchase-page" element={<PurchasePage />} />
 
    
+    <Route path="/admin/users" element={<ManageUsers />} />
+
 
   </Route>
 </Routes>

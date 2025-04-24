@@ -5,11 +5,13 @@ import { Review } from '../entities/Review';
 export class ReviewController {
   async addReview(req: Request, res: Response) {
     try {
+      console.log(req.body, 'reqbody')
       const review = await ReviewService.createReview({
         comment: req.body.comment,
         rating: req.body.rating,
         user:req.body.user,
         book:req.body.book,
+        userName:req.body.userName
       });
       res.status(201).json(review);
     } catch (error) {

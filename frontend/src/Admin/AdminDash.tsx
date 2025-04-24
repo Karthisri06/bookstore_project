@@ -19,6 +19,16 @@ const AdminDash = () => {
       .catch(() => setError("Failed to load books."));
   }, [isAuthenticated, user]);
 
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const fetchAllUser =async ()=>{
+   const data= await axios.get("http://localhost:5000/auth/alluser",{
+    headers: { Authorization: `Bearer ${token}` },
+    })
+    console.log(data.data, 'aertyujhgfhghg')
+  }
+    fetchAllUser()
+  })
   const handleCardClick = (path: string) => navigate(path);
 
   return (

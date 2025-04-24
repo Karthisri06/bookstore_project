@@ -26,12 +26,6 @@ const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
-  const [newReview, setNewReview] = useState<Review>({
-    user: "",
-    comment: "",
-    rating: 5,
-    book: "",
-  });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [reviewAdded, setReviewAdded] = useState(false);
 
@@ -39,9 +33,19 @@ const BookDetails = () => {
   const { addToCart } = useCart();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [maybeLater, setMaybeLater] = useState(false);
+  const [userName, setUserName] = useState(String)
+  const [newReview, setNewReview] = useState<Review>({
+    user: "",
+    comment: "",
+    rating: 5,
+    book: "",
+  });
   const navigate = useNavigate()
 
   useEffect(() => {
+    const userName = localStorage.getItem("userName");
+    if(userName){
+    setUserName(userName)}
     const fetchBook = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/books/${id}`);
@@ -89,7 +93,7 @@ const BookDetails = () => {
         return;
       }
 
-      await axios.post(`http://localhost:5000/reviews`, newReview, {
+      await axios.post(`http://localhost:5000/reviews`, {...newReview, userName}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -264,7 +268,7 @@ const BookDetails = () => {
           <Form.Control
             type="text"
             name="user"
-            value={newReview.user}
+            value={userName}
             onChange={handleReviewChange}
             placeholder="Enter your name"
             required

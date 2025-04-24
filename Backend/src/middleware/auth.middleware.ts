@@ -13,6 +13,7 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ): void => {
+  console.log('entered')
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     console.log('No token provided or incorrect header format');
