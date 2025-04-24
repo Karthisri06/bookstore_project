@@ -28,17 +28,15 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [userName, setUserName] = useState<string | null>(null);
 
  
   useEffect(() => {
-    const username = localStorage.getItem('userName');
-    console.log(username, 'test');
-    setUserName(username);
+    const userName = localStorage.getItem('userName');
+    console.log(userName, 'test');
   
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/cart/${username}`);
+        const response = await axios.get(`http://localhost:5000/cart/${userName}`);
         const data = response.data;
         console.log(data, ' cart test');
   

@@ -1,12 +1,12 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useParams,useNavigate } from "react-router-dom";
+import { useEffect, useState} from "react";
 import axios from "axios";
 import { Card, Button, Spinner, Form, ListGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAuth } from "../FormComponents/AuthContext";
-import { useCart } from "../Cart/CartContext"; 
-import { CartItem } from "../types";
-import { Book } from "../types";
+import { useCart } from "../Cart/CartContext";
+import AuthModal from "../FormComponents/Authmodal";
+import { Book, CartItem } from "../types";
 
 interface Review {
   book: string;
@@ -22,8 +22,6 @@ interface ReviewData {
   user: string;
 }
 
-
-
 const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
@@ -36,11 +34,12 @@ const BookDetails = () => {
   });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [reviewAdded, setReviewAdded] = useState(false);
-  const { user } = useAuth();
-  const { addToCart } = useCart(); 
-  const isLoggedIn = !!localStorage.getItem("token");
 
-
+  const { user, setUser, isAuthenticated, openAuthModal } = useAuth();
+  const { addToCart } = useCart();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [maybeLater, setMaybeLater] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -56,8 +55,7 @@ const BookDetails = () => {
     };
 
     fetchBook();
-  }, [id]);
-// console.log(book, "book in cart");
+  }, []);
 
   useEffect(() => {
     if (book?.title) {
@@ -106,7 +104,6 @@ const BookDetails = () => {
         book: book?.title || "",
       });
 
-      // Refresh reviews
       const updatedReviews = await axios.get(
         `http://localhost:5000/reviews/book/${book?.title}`
       );
@@ -116,26 +113,75 @@ const BookDetails = () => {
       toast.error("Something went wrong.");
     }
   };
-   
-   const handleAddToCart = (book: Book) => {
-     if (!user) {
-       toast.info("Login to add to cart");
-       return;
-     }
-   
-     addToCart({
-       id: book.id,
-       bookName: book.title,
-       description: book.description,
-       price: book.price,
-       imageUrl: book.imageUrl,
-       userName: user?.userName || "user",
-     });
-     
-     toast.success(`${book.title} has been added to your cart!`);
-   };
-  
-  
+
+  const handleAddToCart = (book: Book) => {
+    if (!isAuthenticated && !maybeLater) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    const userName = localStorage.getItem("userName");
+
+    const cartItem: CartItem = {
+      id: book.id,
+      bookName: book.title,
+      description: book.description,
+      price: book.price,
+      imageUrl: book.imageUrl,
+      userName: userName ? JSON.parse(userName) : "user",
+    };
+
+    addToCart(cartItem);
+    toast.success(`${book.title} has been added to your cart!`);
+  };
+
+
+
+  const handlePurchase = (bookId: number) => {
+    if (!isAuthenticated && !maybeLater) {
+      openAuthModal();
+    } else {
+      navigate('/purchase-page', { state: { bookId } });
+    }
+  };
+  const handleSignup = async (email: string, password: string, userName: string) => {
+    try {
+      const res = await axios.post("http://localhost:5000/auth/register", {
+        email,
+        password,
+        userName,
+      });
+      toast("Signup successful");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      throw new Error("Signup failed. Try a different email.");
+    }
+  };
+
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const res = await axios.post("http://localhost:5000/auth/login", {
+        email,
+        password,
+      });
+
+      const data = res.data;
+      if (!data || !data.token || !data.user) {
+        throw new Error("Invalid login response");
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("userName", JSON.stringify(data.user.userName));
+      setUser(data.user);
+      setShowAuthModal(false);
+      toast("Login successful");
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw new Error("Login failed. Please check your credentials.");
+    }
+  };
+
   if (loading)
     return (
       <div className="text-center mt-5">
@@ -145,7 +191,6 @@ const BookDetails = () => {
 
   if (!book)
     return <p className="text-danger text-center mt-4">Book not found</p>;
-
 
   return (
     <div className="container mt-4">
@@ -160,7 +205,7 @@ const BookDetails = () => {
                 <strong>Title:</strong> {book.title}
               </Card.Title>
               <Card.Subtitle className="mb-2 text-muted">
-                <strong>Author:</strong> {book.authors}
+                <strong>Author:</strong> {book.author}
               </Card.Subtitle>
               <Card.Text>
                 <strong>Description:</strong> {book.description}
@@ -173,26 +218,19 @@ const BookDetails = () => {
               </Card.Text>
 
               <div className="d-grid gap-2 d-md-block mt-3">
-              <Button
-  variant="outline-primary"
-  size="sm"
-  onClick={() => {
-    if (!user) {
-      toast.info("Please log in to add items to your cart.");
-      return;
-    }
-
-    handleAddToCart(book); 
-  }}
->
-  Add to Cart
-</Button>
-
-
-
-                <Button variant="success">
-                  Buy Now
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => handleAddToCart(book)}
+                >
+                  Add to Cart
                 </Button>
+                <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => handlePurchase(book.id)}
+                    >
+                      Buy Now
+                    </button>
               </div>
             </Card.Body>
           </div>
@@ -271,9 +309,19 @@ const BookDetails = () => {
           Your review has been added!
         </div>
       )}
+
+      <AuthModal
+        show={showAuthModal}
+        handleClose={() => setShowAuthModal(false)}
+        handleLogin={handleLogin}
+        handleSignup={handleSignup}
+        onMaybeLater={() => {
+          setMaybeLater(true);
+          setShowAuthModal(false);
+        }}
+      />
     </div>
   );
 };
 
 export default BookDetails;
-

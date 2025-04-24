@@ -34,5 +34,6 @@ export class Book {
   @OneToMany(() => Purchase, (purchase) => purchase.book)
   purchase: Purchase[];
   rating: any;
+  purchases: any;
 }
 

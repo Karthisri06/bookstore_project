@@ -4,6 +4,7 @@ import { User } from '../entities/User';
 import { Book } from '../entities/Book';
 
 export class ReviewService {
+  static getReviewsByBook: any;
   static async createReview(data: {
     comment: string; 
     rating: number;
@@ -22,7 +23,7 @@ export class ReviewService {
     return Response;
   }
 
-  static async getReviewsByBook(bookId:string) {
+ async getReviewsByBook(bookId:string) {
     const reviewRepo = AppDataSource.getRepository(Review);
     return reviewRepo.find({
       where: { book: bookId },

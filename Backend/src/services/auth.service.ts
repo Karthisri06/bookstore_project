@@ -39,7 +39,6 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    // JWT token generation
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET as string,
@@ -49,7 +48,6 @@ export class AuthService {
     return { token, user };
   }
 
-  // (Optional) Get current user info from token
    async getProfile(userId: number) {
     const user = await userRepository.findOneBy({ id: userId });
     if (!user) {

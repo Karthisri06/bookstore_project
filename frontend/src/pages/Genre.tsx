@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AuthModal from "../FormComponents/Authmodal";
+import { loginUser, signupUser } from "../FormComponents/authService";
 import { useAuth } from "../FormComponents/AuthContext";
 import { useCart } from "../Cart/CartContext";
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,7 +13,7 @@ import { toast } from "react-toastify";
 interface Book {
   id: number;
   title: string;
-  authors: string;
+  author: string;
   description: string;
   price: number;
   imageUrl: string;
@@ -34,10 +35,13 @@ interface Book {
 
 
 const Genre = () => {
+  const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  
   const { genre } = useParams<{ genre: string }>();
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
+   const [maybeLater, setMaybeLater] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   const { user, setUser } = useAuth(); 
   const navigate = useNavigate();
@@ -46,6 +50,11 @@ const Genre = () => {
   const isLoggedIn = !!localStorage.getItem("token");
 
   useEffect(() => {
+
+    const username = localStorage.getItem('userName')
+    if(username){
+    setUserName(username)
+    }
     if (genre) {
       axios
         .get(`http://localhost:5000/books/genre/${genre}`)
@@ -100,27 +109,40 @@ const Genre = () => {
   };
 
 
-  
   const handleAddToCart = (book: Book) => {
-    if (!user) {
-      toast.info("Login to add to cart");
-      return;
-    }
-  
-    addToCart({
-      id: book.id,
-      bookName: book.title,
-      description: book.description,
-      price: book.price,
-      imageUrl: book.imageUrl,
-      userName: user?.userName || "user",
-    });
-    
-    toast.success(`${book.title} has been added to your cart!`);
+    if (!isAuthenticated && !maybeLater) {
+      openAuthModal();
+    } 
+      const cartItem = {
+        id:book.id,
+        description: book.description,
+        bookName: book.title,
+        price: book.price,
+        imageUrl:book.imageUrl,
+        userName:  userName,
+      };
+      addToCart(cartItem); 
   };
+  
+  
+  const handlePurchase = (bookId: number) => {
+    if (!isAuthenticated && !maybeLater) {
+      openAuthModal();
+    } else {
+      navigate('/purchase-page', { state: { bookId } });
+    }
+  };
+   
   
   return (
     <div className="container py-5">
+        <AuthModal
+        show={showAuthModal}
+        handleClose={() => setShowAuthModal(false)}
+        handleLogin={handleLogin}
+        handleSignup={handleSignup}
+        onMaybeLater={() => setShowAuthModal(false)}
+      />
       <h2 className="text-center mb-5 fw-bold">
         {genre ? `Books in "${genre}"` : "Loading genre..."}
       </h2>
@@ -143,7 +165,7 @@ const Genre = () => {
             <div className="card-body d-flex flex-column">
               <h6 className="fw-bold mb-1">{book.title}</h6>
               <p className="mb-1 text-muted" style={{ fontSize: "0.9rem" }}>
-                {book.authors || "Unknown Author"}
+                {book.author || "Unknown Author"}
               </p>
               <p className="mb-1 text-success fw-bold">₹{book.price.toFixed(2)}</p>
               <div className="text-warning mb-3" style={{ fontSize: "0.9rem" }}>
@@ -151,41 +173,18 @@ const Genre = () => {
               </div>
 
               <div className="d-flex flex-column gap-2 mt-auto">
-                <button
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      setShowAuthModal(true);
-                    } else {
-                      addToCart({
-                        id: book.id,
-                        bookName: book.title,
-                        description: book.description,
-                        price: book.price,
-                        imageUrl: book.imageUrl,
-                        userName: user?.userName || "Guest",
-                      });
-                      
-                      toast(`Added ${book.title} to cart`);
-                    }
-                  }}
-                >
-                  Add to Cart
-                </button>
-
-                <button
-                  className="btn btn-sm btn-success"
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      setShowAuthModal(true);
-                    } else {
-                      toast(`Bought ${book.title}`);
-                      // Later: redirect to order/payment page here
-                    }
-                  }}
-                >
-                  Buy Now
-                </button>
+              <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => handleAddToCart(book)}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => handlePurchase(book.id)}
+                    >
+                      Buy Now
+                    </button>
 
                 <button
                   className="btn btn-sm btn-outline-secondary"

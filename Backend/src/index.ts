@@ -6,6 +6,7 @@ import bookRoutes from "./routes/book.routes";
 import cartRoutes from "./routes/cart.routes";
 import { User } from "../src/entities/User";
 import ReviewController from './routes/review.routes';
+import buyRoutes from './routes/purchase.route';
 import cors from "cors";
 import dotenv from 'dotenv'
 import { CartController } from "./controllers/cart.controller";
@@ -23,6 +24,7 @@ app.use("/books", bookRoutes);
 app.use("/reviews", ReviewController);
 app.use("/author",authorRoute);
 app.use("/cart", cartRoutes );
+app.use("/buy",buyRoutes)
 
 
 app.get("/test", (req, res) => {

@@ -29,4 +29,5 @@ export class User {
 
   @OneToMany(() => Purchase, (purchase) => purchase.user)
   purchase: Purchase[];
+  purchases: any;
 }

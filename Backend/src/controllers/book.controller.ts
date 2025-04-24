@@ -47,6 +47,7 @@ export const getBookGenre = async (req: Request, res: Response):Promise<void> =>
 };
 
 export const getBookById = async (req: Request, res: Response): Promise<void> => {
+  console.log('rewerty', req.params)
   try {
     const bookId = parseInt(req.params.id);
 
@@ -59,7 +60,7 @@ export const getBookById = async (req: Request, res: Response): Promise<void> =>
     const book = await bookRepo.findOne({
       where: { id: bookId },
     });
-
+console.log(book, 'wertyujhrhjjhgfd')
     if (!book) {
       res.status(404).json({ message: "Book not found" });
       return 

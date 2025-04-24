@@ -16,7 +16,8 @@ export const CartController = {
 
   getUserCart: async (req: Request, res: Response) => {
     try {
-      const id = req.params.userId;
+      const id = req.params.userName;
+      console.log('-------->',req.params)
       const cartItems = await CartService.getUserCart(id);
       res.json(cartItems);
     } catch (err: any) {

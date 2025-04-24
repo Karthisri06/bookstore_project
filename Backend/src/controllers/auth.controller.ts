@@ -135,3 +135,23 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (req.user?.role !== 'admin') {
+    res.status(403).json({ message: "Access denied. Admins only." });
+    return;
+  }
+
+  const userRepo = AppDataSource.getRepository(User);
+
+  try {
+    const users = await userRepo.find({
+      select: ["id", "email", "userName", "role"], 
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

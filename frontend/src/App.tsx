@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
 import { Routes, Route} from "react-router-dom";
 import Home from "./pages/Home";
-import Profile from "./pages/Profile";
 import Cart from "./Cart/Cart";
 import Navbar from "./components/Navbar";
 import { useAuth } from "./FormComponents/AuthContext";
 import AuthModal from "./FormComponents/Authmodal";
 import { loginUser, signupUser } from "./FormComponents/authService";
-import AdminDash from "./pages/AdminDash";
-import AuthDash from "./pages/AuthorDash";
+import AdminDash from "./Admin/AdminDash";
 import Genre from "./pages/Genre";
 import BookDetails from "./pages/BookDetails";
 import Layout from "./components/Layout";
@@ -18,6 +16,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import PrivateRoute from "./components/PrivateRoutes";
 import DashboardLayout from "./pages/DashboardLayout";
+import AuthorDashboard from "./Author/AuthorDash";
+import PurchaseForm from "./Purchase/purchase";
+import PurchasePage from './Purchase/PurchasePage';
 
 
 
@@ -60,7 +61,8 @@ const App: React.FC = () => {
           email: res.data.email,
           role: res.data.role,
           name: res.data.name,
-          userName: ""
+          userName: "",
+          id: undefined
         },
         res.data.token
       );
@@ -118,16 +120,21 @@ const App: React.FC = () => {
   <Routes>
   <Route element={<Layout />}>
     <Route path="/" element={<Home />} />
-    <Route path="/profile" element={<PrivateRoute element={<Profile />} />} />
     <Route path="/cart" element={<PrivateRoute element={<Cart />} />} />
 
-    <Route path="/admin" element={<PrivateRoute element={<AdminDash />} isAdmin />} />
+    <Route path="/admin" element={<PrivateRoute element={<AdminDash/>} isAdmin />} />
 
-    <Route path="/author" element={<PrivateRoute element={<AuthDash />} isAuthor />} />
+    <Route path="/author" element={<PrivateRoute element={<AuthorDashboard />} isAuthor />} />
 
     <Route path="/genre/:genre" element={<Genre />} />
     <Route path="/book/:id" element={<BookDetails />} />
     <Route path="/dashboard" element={<PrivateRoute element={<DashboardLayout children={undefined}/>}/>}/>
+
+
+    <Route path="/purchase-page" element={<PurchasePage />} />
+
+   
+
   </Route>
 </Routes>
 

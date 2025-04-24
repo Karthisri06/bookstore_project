@@ -8,6 +8,7 @@ import {
 } from "react";
 
 interface User {
+  id: any;
   userName: string;
   email: string;
   role: string;
@@ -36,7 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
-    console.log('@@@@@@@@@@@@@@@',userData)
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);

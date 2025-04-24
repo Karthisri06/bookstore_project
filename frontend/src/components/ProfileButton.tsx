@@ -4,9 +4,9 @@ import { useAuth } from '../FormComponents/AuthContext';
 import profilePic from '../assets/profile.jpg';
 
 const ProfileButton: React.FC = () => {
-  const { user } = useAuth(); // Accessing user from AuthContext
+  const { user } = useAuth(); 
   const navigate = useNavigate();
-  const location = useLocation();  // Hook to get current path
+  const location = useLocation(); 
 
     const userers = localStorage.getItem('userName') 
     console.log('=======================>',userers)
@@ -14,31 +14,32 @@ const ProfileButton: React.FC = () => {
   const handleRoute = (path: string) => {
     navigate(path);
   };
-
-  const getDashboardLabel = () => {
-    if (user?.role === 'admin') return 'Admin Dashboard';
-    if (user?.role === 'author') return 'Author Dashboard';
-    return 'Dashboard';
-  };
-
   const getDashboardRoute = () => {
-    switch (user?.role) {
+    if (!user?.role) {
+      const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (localUser.role === 'admin') return '/admin';
+      if (localUser.role === 'author') return '/author';
+      return '/dashboard';
+    }
+  
+    switch (user.role) {
       case 'admin':
         return '/admin';
       case 'author':
         return '/author';
       default:
-        return '/dashboard'; // user
+        return '/dashboard';
     }
   };
+  
 
-  const handleDashboardClick = () => {
-    const dashboardRoute = getDashboardRoute();
+  // const handleDashboardClick = () => {
+  //   const dashboardRoute = getDashboardRoute();
 
-    if (location.pathname !== dashboardRoute) {
-      handleRoute(dashboardRoute);
-    }
-  };
+  //   if (location.pathname !== dashboardRoute) {
+  //     handleRoute(dashboardRoute);
+  //   }
+  // };
 
   return (
     <div className="dropdown">
@@ -69,9 +70,9 @@ const ProfileButton: React.FC = () => {
           </button>
         </li>
         <li>
-          <button className="dropdown-item" onClick={handleDashboardClick}>
-            {getDashboardLabel()}
-          </button>
+          {/* <button className="dropdown-item" onClick={handleDashboardClick}>
+            {getDashboardRoute()}
+          </button> */}
         </li>
       </ul>
     </div>

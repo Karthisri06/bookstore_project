@@ -26,9 +26,12 @@ export const CartService = {
   },
 
   getUserCart: async (userName: string) => {
-    const res  = await cartRepo.findOneBy({ userName });
-        return res;
+    const res = await cartRepo.find({
+      where: { userName }
+    });
+    return res;
   },
+  
   
 
   removeFromCart: async (id: number) => {

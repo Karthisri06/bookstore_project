@@ -11,7 +11,7 @@ export interface Author {
 export interface Book {
   id: number;
   title: string;
-  authors: string;
+  author: string;
   description: string;
   price: number;
   imageUrl: string;
@@ -41,4 +41,28 @@ export interface CartItem {
   price: number;
   imageUrl:string;
   userName:  string | null;
+}
+
+export interface PurchaseItem{
+
+ user :string;
+ book :string;
+quantity:number;
+ address:string;
+priceAtPurchase : number;
+
+}
+
+export interface user {
+  messages:string,
+  token:any,
+  user:Userstroe
+}
+
+
+export interface Userstroe {
+  id: number;
+  email: string;
+  role: string;
+  userName: string;
 }

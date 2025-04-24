@@ -14,14 +14,11 @@ export const authenticate = (
   next: NextFunction
 ): void => {
   const authHeader = req.headers.authorization;
-console.log('tes1')
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log('tes1')
-
+    console.log('No token provided or incorrect header format');
     res.status(401).json({ message: "Unauthorized: No token provided" });
     return;
   }
-  console.log('tes2')
 
   try {
     const token = authHeader.split(" ")[1];
@@ -30,15 +27,15 @@ console.log('tes1')
     //   role: string;
     //   name: string;
     // };
-    // // req.user = decoded;
-    console.log('tes33456')
+    // console.log("decode user:",decoded)
+    // req.user = decoded;
     next();
   } catch (err) {
+    console.error('Token verification failed', err);
     res.status(403).json({ message: "Invalid token" });
     return;
   }
 };
-
 
 export const isAdmin = (
   req: AuthRequest,
@@ -47,8 +44,9 @@ export const isAdmin = (
 ): void => {
   if (req.user?.role !== 'admin') {
     res.status(403).json({ message: "Forbidden: Admin access only" });
-    return
+    return;
   }
   next();
 };
+
 

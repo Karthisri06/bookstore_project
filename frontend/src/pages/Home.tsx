@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
 import { useCart } from "../Cart/CartContext"; 
 import { ToastContainer } from "react-toastify"; 
-
+import { PurchaseItem } from "../types";
 const Home = () => {
   const { isAuthenticated, setIsLoggedIn, openAuthModal, closeAuthModal, showModal } = useAuth();  
   const { addToCart } = useCart();  // Use CartContext to manage cart
@@ -23,7 +23,7 @@ const Home = () => {
   const { cartItems } = useCart();
 
 
-  // Fetch books and genres on component mount
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -40,7 +40,6 @@ const Home = () => {
     }
   }, [setIsLoggedIn]);
 
-  // Handle login functionality
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await loginUser(email, password);
@@ -71,7 +70,7 @@ const Home = () => {
     }
   };
 
-  // Handle signup functionality
+  
   const handleSignup = async (email: string, password: string,userName:string) => {
     try {
       const response = await signupUser(email, password, userName);
@@ -87,14 +86,15 @@ const Home = () => {
     }
   };
 
-  // "Maybe Later" functionality
+ 
   const handleMaybeLater = () => {
     localStorage.setItem("maybeLater", "true");
     setMaybeLater(true);
     closeAuthModal();
   };
 
-  // Fetch books from the backend
+  
+
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -102,12 +102,13 @@ const Home = () => {
         const allBooks = res.data;
         setAllBooks(allBooks);
 
-        // Shuffle books for hot selling section
+    
         const shuffled = [...allBooks].sort(() => 0.5 - Math.random());
         setHotBooks(shuffled.slice(0, 5));
+        console.log('asdfghjkpoiuytr',allBooks.slice(0, 15))
         setFeaturedBooks(allBooks.slice(0, 15));
 
-        // Extract unique genres
+    
         const seen = new Set<string>();
         const uniqueGenres: string[] = [];
         allBooks.forEach((book) => {
@@ -125,7 +126,7 @@ const Home = () => {
     fetchBooks();
   }, []);
 
-  // Filter books by selected genre
+
   const filterByGenre = (genre: string) => {
     const filteredBooks = allBooks.filter((book) => book.genre === genre);
     setFeaturedBooks(filteredBooks);
@@ -147,18 +148,18 @@ const Home = () => {
       addToCart(cartItem); 
   };
   
-  
+// console.log(featuredBooks);
 
-  // Handle buying book now
-  const handleBuyNow = (book: Book) => {
+
+
+
+  const handlePurchase = (bookId: number) => {
     if (!isAuthenticated && !maybeLater) {
       openAuthModal();
     } else {
-      console.log("Proceed to Buy", book.title);
-      toast.success(`Proceeding to buy ${book.title}`);
+      navigate('/purchase-page', { state: { bookId } });
     }
   };
-
   return (
     <div className="container mt-5 pt-4" style={{ maxWidth: "1400px" }}>
       <AuthModal
@@ -191,7 +192,7 @@ const Home = () => {
                 </div>
                 <div className="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-2 rounded">
                   <h5>{book.title}</h5>
-                  <p>{book.authors || "Unknown Author"}</p>
+                  <p>{book.author || "Unknown Author"}</p>
                 </div>
               </div>
             ))}
@@ -238,7 +239,7 @@ const Home = () => {
                 <div className="card-body d-flex flex-column justify-content-between" style={{ height: "220px" }}>
                   <div>
                     <h5 className="card-title text-truncate">{book.title}</h5>
-                    <p className="card-text text-muted small">{book.authors || "Unknown Author"}</p>
+                    <p className="card-text text-muted small">{book.author || "Unknown Author"}</p>
                     <p className="card-text text-success fw-bold">₹{book.price || "N/A"}</p>
                   </div>
                   <div className="mt-auto d-flex flex-column gap-2">
@@ -250,7 +251,7 @@ const Home = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-success"
-                      onClick={() => handleBuyNow(book)}
+                      onClick={() => handlePurchase(book.id)}
                     >
                       Buy Now
                     </button>

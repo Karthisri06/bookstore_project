@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">67.69% </span>
+                <span class="strong">66.15% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>44/65</span>
+                <span class='fraction'>43/65</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">64.4% </span>
+                <span class="strong">62.71% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>38/59</span>
+                <span class='fraction'>37/59</span>
             </div>
         
             
@@ -199,7 +199,8 @@
 <a name='L134'></a><a href='#L134'>134</a>
 <a name='L135'></a><a href='#L135'>135</a>
 <a name='L136'></a><a href='#L136'>136</a>
-<a name='L137'></a><a href='#L137'>137</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -215,18 +216,17 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -239,18 +239,19 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -273,7 +274,6 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -296,8 +296,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -348,9 +350,7 @@ import { AuthRequest } from "../authrequest";
 &nbsp;
 export const registerUser = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
   const userRepo = AppDataSource.getRepository(User);
-  const { email, password } = req.body;
-&nbsp;
-  console.log("Register request body:", req.body);
+  const { email, password, userName } = req.body;
 &nbsp;
   try {
     const existingUser = await userRepo.findOneBy({ email });
@@ -362,7 +362,8 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
     }
 &nbsp;
     const newUser = <span class="cstat-no" title="statement not covered" >new User();</span>
-<span class="cstat-no" title="statement not covered" >    newUser.email = email;</span>
+<span class="cstat-no" title="statement not covered" >    newUser.userName= userName,</span>
+    newUser.email = email;
 <span class="cstat-no" title="statement not covered" >    newUser.password = await bcrypt.hash(password, 10);</span>
 <span class="cstat-no" title="statement not covered" >    newUser.role = "user";</span>
 &nbsp;
@@ -375,7 +376,7 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
 <span class="cstat-no" title="statement not covered" >      res.status(400).json({ message: "Validation failed", errors });</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
-&nbsp;
+<span class="cstat-no" title="statement not covered" >console.log(newUser, 'new user')</span>
 <span class="cstat-no" title="statement not covered" >    await userRepo.save(newUser);</span>
 <span class="cstat-no" title="statement not covered" >    console.log("User saved successfully!");</span>
 &nbsp;
@@ -383,7 +384,7 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
     const token = <span class="cstat-no" title="statement not covered" >jwt.sign(</span>
       { userId: newUser.id, role: newUser.role },
       process.env.JWT_SECRET || "your_jwt_secret",
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    res.status(201).json({</span>
@@ -391,6 +392,7 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
       token,
       user: {
         id: newUser.id,
+        name:newUser.userName,
         email: newUser.email,
         role: newUser.role,
       }
@@ -407,7 +409,6 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
     const { email, password } = req.body;
   
     try {
-      console.log('test')
       const userRepo = AppDataSource.getRepository(User);
       const user = await userRepo.findOne({ where:{email} });
   
@@ -428,10 +429,11 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
   
       // Create JWT token
       const token = jwt.sign(
-        { id: user.id, role: user.role },
+        { id: user.id, role: user.role , name: user.userName },
         process.env.JWT_SECRET!,
         { expiresIn: "7d" }
       );
+      console.log(user, 'user')
   
        res.status(200).json({
         message: "Login successful",
@@ -440,6 +442,7 @@ export const registerUser = async (req: Request, res: Response): Promise&lt;void
           id: user.id,
           email: user.email,
           role: user.role,
+          userName: user.userName
         },
       });
     } catch (err) {
@@ -478,7 +481,7 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise&lt;vo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-21T08:17:43.880Z
+                at 2025-04-23T19:15:20.618Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
