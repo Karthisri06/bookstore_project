@@ -2,6 +2,7 @@ import { AppDataSource } from '../data-source';
 import { Review } from '../entities/Review';
 import { User } from '../entities/User';
 import { Book } from '../entities/Book';
+import { response } from 'express';
 
 export class ReviewService {
   static getReviewsByBook(bookId:string) {
@@ -25,11 +26,12 @@ export class ReviewService {
     const review = reviewRepo.create({
       comment: data.comment,
       rating: data.rating,
-      user: data.user, 
       book: data.book, 
       userName:data.userName,
     });
+    console.log("reviews",review)
   const Response = await reviewRepo.save(review)
+  console.log("----->response",response)
     return Response;
   }
 

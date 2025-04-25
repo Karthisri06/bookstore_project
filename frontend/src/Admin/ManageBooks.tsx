@@ -50,25 +50,25 @@ const ManageBooks: React.FC = () => {
       header: 'Genre',
       accessorKey: 'genre', 
     },
-    {
-      header: 'Actions',
-      cell: ({ row }) => (
-        <div>
-          <button
-            className="btn btn-sm btn-primary me-2"
-            onClick={() => alert(`Edit book: ${row.original.title}`)}
-          >
-            Edit
-          </button>
-          <button
-            className="btn btn-sm btn-danger"
-            onClick={() => alert(`Delete book: ${row.original.title}`)}
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
+    // {
+    //   header: 'Actions',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       <button
+    //         className="btn btn-sm btn-primary me-2"
+    //         onClick={() => alert(`Edit book: ${row.original.title}`)}
+    //       >
+    //         Edit
+    //       </button>
+    //       <button
+    //         className="btn btn-sm btn-danger"
+    //         onClick={() => alert(`Delete book: ${row.original.title}`)}
+    //       >
+    //         Delete
+    //       </button>
+    //     </div>
+    //   ),
+    // },
   ];
 
  

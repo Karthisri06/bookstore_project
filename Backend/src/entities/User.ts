@@ -24,8 +24,8 @@ export class User {
   @Column()
   userName: string;
 
-  @OneToMany(() => Review, (review) => review.user)
-  reviews: Review[];
+  @Column()
+  reviews: string;
 
   @OneToMany(() => Purchase, (purchase) => purchase.user)
   purchase: Purchase[];

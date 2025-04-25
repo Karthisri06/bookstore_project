@@ -91,15 +91,15 @@ const AllOrders = () => {
         accessorKey: 'purchasedAt',
         cell: ({ getValue }) => new Date(getValue()).toLocaleString(),
       },
-      {
-        header: 'Actions',
-        cell: ({ row }) => (
-          <div>
-            <Button variant="warning" onClick={() => handleEdit(row.original.id)}>Edit</Button>{' '}
-            <Button variant="danger" onClick={() => handleDelete(row.original.id)}>Delete</Button>
-          </div>
-        ),
-      },
+      // {
+      //   header: 'Actions',
+      //   cell: ({ row }) => (
+      //     <div>
+      //       <Button variant="warning" onClick={() => handleEdit(row.original.id)}>Edit</Button>{' '}
+      //       <Button variant="danger" onClick={() => handleDelete(row.original.id)}>Delete</Button>
+      //     </div>
+      //   ),
+      // },
     ],
     []
   );

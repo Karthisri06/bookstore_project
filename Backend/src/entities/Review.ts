@@ -29,15 +29,10 @@ export class Review extends BaseEntity {
   updatedAt: Date;
 
   @Column()
-  user: string;
-
-  @Column()
   book: string;
 
   @Column()
   userName: string;
 
-  @Column()
-  authorName: string;
 }
 

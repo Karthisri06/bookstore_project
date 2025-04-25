@@ -74,19 +74,19 @@ const ManageUsers: React.FC = () => {
       header: 'Role',
       accessorKey: 'role',
     },
-    {
-      header: 'Actions',
-      cell: ({ row }) => (
-        <div>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(row.original)}>
-            Edit
-          </button>
-          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row.original.id)}>
-            Delete
-          </button>
-        </div>
-      ),
-    },
+    // {
+    //   header: 'Actions',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(row.original)}>
+    //         Edit
+    //       </button>
+    //       <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row.original.id)}>
+    //         Delete
+    //       </button>
+    //     </div>
+    //   ),
+    // },
   ];
 
   const table = useReactTable({

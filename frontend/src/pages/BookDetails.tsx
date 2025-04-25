@@ -19,7 +19,7 @@ interface ReviewData {
   id: number;
   comment: string;
   rating: number;
-  user: string;
+  userName: string;
 }
 
 const BookDetails = () => {
@@ -111,6 +111,7 @@ const BookDetails = () => {
       const updatedReviews = await axios.get(
         `http://localhost:5000/reviews/book/${book?.title}`
       );
+      console.log("qwertyuio",updatedReviews)
       setReviews(updatedReviews.data);
     } catch (error) {
       console.error("Error adding review:", error);
@@ -249,7 +250,7 @@ const BookDetails = () => {
           {reviews.map((review) => (
             <ListGroup.Item key={review.id} className="mb-2">
               <div className="d-flex justify-content-between align-items-center">
-                <strong>{review.user || "Anonymous"}</strong>
+                <strong>{review.userName || "Anonymous"}</strong>
                 <span className="text-warning">
                   {"★".repeat(review.rating)}
                   {"☆".repeat(5 - review.rating)}
