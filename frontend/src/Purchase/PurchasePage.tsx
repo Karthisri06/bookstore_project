@@ -20,7 +20,7 @@ console.log("edrftgyhu");
 useEffect(() => {
   const fetchBook = async () => {
     try {
-      console.log('book', bookId);  // Check if bookId is correct
+      console.log('book', bookId); 
       const res = await axios.get(`http://localhost:5000/books/${bookId}`);
       setBook(res.data);
       console.log(res.data, "order book");
@@ -30,10 +30,10 @@ useEffect(() => {
     }
   };
 
-  if (bookId) {  // Ensure bookId is not undefined or null
+  if (bookId) {  
     fetchBook();
   }
-}, [bookId]);  // bookId is now in the dependency array
+}, [bookId]);
 
 
   const handlePurchase = async ({

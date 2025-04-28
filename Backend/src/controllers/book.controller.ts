@@ -73,3 +73,39 @@ console.log(book, 'wertyujhrhjjhgfd')
   }
 };
 
+
+export const editBook = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const bookId = parseInt(req.params.id);
+    const { title, description, genre, price, imageUrl } = req.body;
+
+    if (isNaN(bookId)) {
+      res.status(400).json({ message: "Invalid book ID" });
+      return;
+    }
+
+    const book = await bookRepo.findOne({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      res.status(404).json({ message: "Book not found" });
+      return;
+    }
+
+    // Update the book details
+    book.title = title || book.title;
+    book.description = description || book.description;
+    book.genre = genre || book.genre;
+    book.price = price || book.price;
+    book.imageUrl = imageUrl || book.imageUrl;
+
+    // Save the updated book
+    await bookRepo.save(book);
+
+    res.json({ message: "Book updated successfully", book });
+  } catch (err) {
+    console.error("Error updating book:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
