@@ -17,21 +17,24 @@ const PurchasePage: React.FC = () => {
 console.log('0987654567890987654',bookId);
 console.log("edrftgyhu");
 
-  useEffect(() => {
-    const fetchBook = async () => {
-      try {
-        console.log('book', bookId)
-        const res = await axios.get(`http://localhost:5000/books/${bookId}`);
-        setBook(res.data);
-        console.log(res.data, "order book")
-      } catch (error) {
-        console.error("Failed to fetch book", error);
-        toast.error("Failed to load book details.");
-      }
-    };
+useEffect(() => {
+  const fetchBook = async () => {
+    try {
+      console.log('book', bookId);  // Check if bookId is correct
+      const res = await axios.get(`http://localhost:5000/books/${bookId}`);
+      setBook(res.data);
+      console.log(res.data, "order book");
+    } catch (error) {
+      console.error("Failed to fetch book", error);
+      toast.error("Failed to load book details.");
+    }
+  };
 
+  if (bookId) {  // Ensure bookId is not undefined or null
     fetchBook();
-  }, []);
+  }
+}, [bookId]);  // bookId is now in the dependency array
+
 
   const handlePurchase = async ({
         quantity,

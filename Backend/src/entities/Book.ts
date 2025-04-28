@@ -4,6 +4,7 @@ import { Purchase } from "./Purchase";
 
 @Entity()
 export class Book {
+  bookName: any;
   static findOne(arg0: { where: { title: FindOperator<string>; }; }) {
     throw new Error('Method not implemented.');
   }

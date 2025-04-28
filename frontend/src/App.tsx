@@ -289,7 +289,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
 
     
-          <Route path="/cart" element={(isUser || isAuthor) ? <Cart /> : <Navigate to="/" />} />
+          <Route path="/cart" element={(isUser || isAuthor || isAdmin) ? <Cart /> : <Navigate to="/" />} />
 
           <Route path="/admin" element={isAdmin ? <AdminDash /> : <Navigate to="/" />} />
           <Route path="/admin/users" element={isAdmin ? <ManageUsers /> : <Navigate to="/" />} />
@@ -301,8 +301,8 @@ const App: React.FC = () => {
           <Route path="/genre/:genre" element={<Genre />} />
           <Route path="/book/:id" element={<BookDetails />} />
 
-          <Route path="/dashboard" element={(isUser || isAuthor) ? <DashboardLayout children={undefined} /> : <Navigate to="/" />} />
-          <Route path="/purchase-page" element={(isUser || isAuthor) ? <PurchasePage /> : <Navigate to="/" />} />
+          <Route path="/dashboard" element={(isUser || isAuthor) ? <DashboardLayout /> : <Navigate to="/" />} />
+          <Route path="/purchase-page" element={(isUser || isAuthor ||  isAdmin) ? <PurchasePage /> : <Navigate to="/" />} />
         </Route>
       </Routes>
     </>

@@ -4,7 +4,8 @@ import { Purchase } from "../entities/Purchase";
 import { User } from "../entities/User";
 import { Book } from "../entities/Book";
 import { AuthRequest } from "../middleware/auth.middleware"; 
-import { getRepository } from "typeorm";
+import { Cart } from "../entities/Cart";
+
 
 export const PurchaseController = {
   buyBook: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -32,6 +33,14 @@ export const PurchaseController = {
       console.log('==?',purchase)
 
       await AppDataSource.getRepository(Purchase).save(purchase);
+
+      const cartItem = await AppDataSource.getRepository(Cart).findOne({
+        where: { userName: userName, bookName: book.bookName }
+      });
+
+      if (cartItem) {
+        await AppDataSource.getRepository(Cart).remove(cartItem);
+      }
       res.status(201).json({ message: "Purchase successful" });
     } catch (error) {
       res.status(500).json({ message: "Purchase failed", error });
